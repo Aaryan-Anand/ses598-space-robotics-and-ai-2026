@@ -1,12 +1,20 @@
 #!/usr/bin/env python3
 
+import os
+
+# Non-interactive backend: avoids GTK/SVG errors in headless or broken display setups.
+import matplotlib
+
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt
+
 import rclpy
 from rclpy.node import Node
 from std_msgs.msg import Float64
 from sensor_msgs.msg import JointState
+from rclpy.qos import QoSProfile, ReliabilityPolicy, HistoryPolicy, DurabilityPolicy
 import numpy as np
 from scipy import linalg
-import matplotlib.pyplot as plt
 from collections import deque
 
 class CartPoleLQRController(Node):
@@ -47,7 +55,11 @@ class CartPoleLQRController(Node):
         self.state_initialized = False
         self.last_control = 0.0
         self.control_count = 0
-        
+        self._last_uninitialized_warn_time = 0.0
+        self._last_eq_warn_time = 0.0
+        self.simulation_done = False
+        self.earthquake_forces = deque()
+
         # Data storage for plotting
         self.time_steps = deque()
         self.cart_positions = deque()
@@ -61,7 +73,19 @@ class CartPoleLQRController(Node):
         if self.cart_cmd_pub:
             self.get_logger().info('Force command publisher created successfully')
         
-        self.joint_state_sub = self.create_subscription(JointState, '/world/empty/model/cart_pole/joint_state', self.joint_state_callback, 10)
+        # Match the republisher output topic and QoS to ensure the controller receives state.
+        joint_state_qos = QoSProfile(
+            reliability=ReliabilityPolicy.RELIABLE,
+            durability=DurabilityPolicy.TRANSIENT_LOCAL,
+            history=HistoryPolicy.KEEP_LAST,
+            depth=1
+        )
+        self.joint_state_sub = self.create_subscription(
+            JointState,
+            'joint_states',
+            self.joint_state_callback,
+            joint_state_qos
+        )
         
         self.earthquake_sub = self.create_subscription(Float64, '/earthquake_force', self.earthquake_callback, 10)
         
@@ -69,7 +93,9 @@ class CartPoleLQRController(Node):
         self.timer = self.create_timer(0.01, self.control_loop)
 
         self.MAX_SIMULATION_TIME = 120.0  # Set to desired duration
-        
+        # Skip failure checks until physics and joint states settle (avoids instant stop at spawn).
+        self.TERMINATION_GRACE_SEC = 1.0
+
         self.get_logger().info('Cart-Pole LQR Controller initialized')
     
     def compute_lqr_gain(self):
@@ -101,13 +127,13 @@ class CartPoleLQRController(Node):
 
     def earthquake_callback(self, msg):
         """Store earthquake force values."""
-        if not hasattr(self, 'earthquake_forces'):
-            self.earthquake_forces = deque()  # Ensure it's initialized
-
         if self.state_initialized:
             self.earthquake_forces.append(msg.data)
         else:
-            self.get_logger().warn("Received earthquake force before state was initialized.")
+            now = self.get_clock().now().nanoseconds / 1e9
+            if now - self._last_eq_warn_time >= 1.0:
+                self.get_logger().warn("Received earthquake force before state was initialized.")
+                self._last_eq_warn_time = now
 
     def print_metrics(self):
         """Prints performance metrics after simulation ends."""
@@ -130,8 +156,14 @@ class CartPoleLQRController(Node):
     def control_loop(self):
         """Compute and apply LQR control."""
         try:
+            if self.simulation_done:
+                return
+
             if not self.state_initialized:
-                self.get_logger().warn('State not initialized yet')
+                now = self.get_clock().now().nanoseconds / 1e9
+                if now - self._last_uninitialized_warn_time >= 1.0:
+                    self.get_logger().warn('State not initialized yet')
+                    self._last_uninitialized_warn_time = now
                 return
 
             u = -self.K @ self.x
@@ -155,59 +187,79 @@ class CartPoleLQRController(Node):
             if len(self.earthquake_forces) < len(self.time_steps):
                 self.earthquake_forces.append(self.earthquake_forces[-1] if self.earthquake_forces else 0.0)
 
-            # **Termination Conditions**
+            # **Termination Conditions** (after grace period so spawn pose does not instantly fail)
+            if current_time < self.TERMINATION_GRACE_SEC:
+                return
+
             if (
-                abs(self.x[0, 0]) > 2.5 or 
-                abs(self.x[2, 0]) > np.radians(45) or 
-                current_time >= self.MAX_SIMULATION_TIME  # Stop after max time
+                abs(self.x[0, 0]) > 2.5
+                or abs(self.x[2, 0]) > np.radians(45)
+                or current_time >= self.MAX_SIMULATION_TIME
             ):
+                self.simulation_done = True
+                self.timer.cancel()
                 self.get_logger().warn(f"Simulation ended: cart_x={self.x[0, 0]:.2f}m, pole_angle={np.degrees(self.x[2, 0]):.2f}°, duration={current_time:.2f}s")
                 self.print_metrics()
-                self.plot_results()
-                rclpy.shutdown()
+                try:
+                    path = self.plot_results()
+                    if path:
+                        self.get_logger().info(f"Saved plot to {path}")
+                except Exception as plot_error:
+                    self.get_logger().warn(f"Plot generation failed: {plot_error}")
+                if rclpy.ok():
+                    rclpy.shutdown()
                 return
 
         except Exception as e:
             self.get_logger().error(f'Control loop error: {e}')
 
     def plot_results(self):
-        """Generate plots for analysis."""
+        """Generate plots for analysis; save PNG (no GUI required)."""
+        out = os.path.join(os.path.expanduser("~"), "cart_pole_lqr_results.png")
+
         plt.figure(figsize=(12, 10))
-        
+
         plt.subplot(2, 2, 1)
         plt.plot(self.time_steps, self.cart_positions, label='Cart Position (m)', color='b')
         plt.xlabel('Time (s)')
         plt.ylabel('Cart Position (m)')
         plt.legend()
-        
+
         plt.subplot(2, 2, 2)
         plt.plot(self.time_steps, self.pole_angles, label='Pole Angle (°)', color='r')
         plt.xlabel('Time (s)')
         plt.ylabel('Pole Angle (°)')
         plt.legend()
-        
+
         plt.subplot(2, 2, 3)
         plt.plot(self.time_steps, self.earthquake_forces, label='Earthquake Force (N)', color='g')
         plt.xlabel('Time (s)')
         plt.ylabel('Earthquake Force (N)')
         plt.legend()
-        
+
         plt.subplot(2, 2, 4)
-        plt.plot(self.time_steps, self.control_forces, label='Control Force (N)', color='m')  # Changed 'p' to 'm' (magenta)
+        plt.plot(self.time_steps, self.control_forces, label='Control Force (N)', color='m')
         plt.xlabel('Time (s)')
         plt.ylabel('Control Force (N)')
         plt.legend()
 
         plt.tight_layout()
-        plt.show()
+        plt.savefig(out, dpi=150)
+        plt.close()
+        return out
 
 
 def main(args=None):
     rclpy.init(args=args)
     controller = CartPoleLQRController()
-    rclpy.spin(controller)
-    controller.destroy_node()
-    rclpy.shutdown()
+    try:
+        rclpy.spin(controller)
+    except KeyboardInterrupt:
+        pass
+    finally:
+        controller.destroy_node()
+        if rclpy.ok():
+            rclpy.shutdown()
 
 if __name__ == '__main__':
     main()

@@ -96,6 +96,14 @@
         <dynamics damping="0.1" friction="0.0"/>
     </joint>
 
+    <!-- Prefer zero joint positions at spawn (cart centered, pole at zero reference). -->
+    <gazebo reference="cart_to_base">
+        <initial_position>0.0</initial_position>
+    </gazebo>
+    <gazebo reference="pole_joint">
+        <initial_position>0.0</initial_position>
+    </gazebo>
+
     <!-- Gazebo Ignition plugins -->
     <gazebo>
         <plugin filename="gz-sim-joint-state-publisher-system"
