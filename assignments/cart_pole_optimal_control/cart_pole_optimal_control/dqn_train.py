@@ -102,7 +102,7 @@ class SimpleCartPoleEnv:
             - 1.25 * (x / 1.0) ** 2
             - 0.15 * (xdot / 2.0) ** 2
             - 0.15 * (thetadot / 2.0) ** 2
-            - 0.0005 * (u ** 2)
+            - 0.005 * (u ** 2)
         )
 
         done = abs(x) > self.x_limit or abs(theta) > self.theta_limit
@@ -190,7 +190,7 @@ def train():
 
         if episode_reward > best_reward:
             best_reward = episode_reward
-            torch.save(online_net.state_dict(), os.path.expanduser("~/dqn_cartpole_eq.pt"))
+            torch.save(online_net.state_dict(), os.path.expanduser("~/dqn_cartpole.pt"))
 
         print(f"Episode {episode+1}/{NUM_EPISODES} | reward={episode_reward:.2f} | epsilon={epsilon:.3f}")
 
