@@ -42,11 +42,11 @@ class CartPoleLQRController(Node):
             [-1/(self.M * self.L)]
         ])
         
-        x_max=2
-        xdot_max=2.0
-        theta_max=np.deg2rad(5.0)
-        thetadot_max=0.5
-        u_max=20.0
+        x_max=1.2
+        xdot_max=3.0
+        theta_max=np.deg2rad(6.0)
+        thetadot_max=0.9
+        u_max=15.0
 
         # LQR cost matrices
         self.Q = np.diag([
