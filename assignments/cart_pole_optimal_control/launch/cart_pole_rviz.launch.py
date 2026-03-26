@@ -67,7 +67,8 @@ def generate_launch_description():
                 'robot_description': Command(['cat ', urdf_model_path]),
                 'publish_frequency': 50.0,  # Increased update frequency
                 'use_tf_static': True,
-                'ignore_timestamp': True
+                'ignore_timestamp': True,
+                'use_sim_time': True
             }]
         ),
 
@@ -76,7 +77,8 @@ def generate_launch_description():
             package='cart_pole_optimal_control',
             executable='state_republisher',
             name='state_republisher',
-            output='screen'
+            output='screen',
+            parameters=[{'use_sim_time': True}]
         ),
 
         # Force Visualizer
@@ -84,7 +86,8 @@ def generate_launch_description():
             package='cart_pole_optimal_control',
             executable='force_visualizer',
             name='force_visualizer',
-            output='screen'
+            output='screen',
+            parameters=[{'use_sim_time': True}]
         ),
 
         # LQR Controller
@@ -92,7 +95,8 @@ def generate_launch_description():
             package='cart_pole_optimal_control',
             executable='lqr_controller',
             name='lqr_controller',
-            output='screen'
+            output='screen',
+            parameters=[{'use_sim_time': True}]
         ),
 
         # Earthquake Force Generator
@@ -104,7 +108,8 @@ def generate_launch_description():
             parameters=[{
                 'base_amplitude': 15.0,  # Strong force amplitude (realistic setting)
                 'frequency_range': [0.5, 4.0],  # Wide frequency range (realistic setting)
-                'update_rate': 50.0  # Update rate in Hz
+                'update_rate': 50.0,  # Update rate in Hz
+                'use_sim_time': True
             }]
         ),
 
@@ -116,7 +121,8 @@ def generate_launch_description():
             output='screen',
             arguments=['-d', os.path.join(pkg_share, 'config', 'cart_pole.rviz')],
             parameters=[{
-                'update_rate': 50.0  # Match the publish frequency
+                'update_rate': 50.0,  # Match the publish frequency
+                'use_sim_time': True
             }]
         )
     ]) 
