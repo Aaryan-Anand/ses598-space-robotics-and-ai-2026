@@ -24,7 +24,7 @@ class DQNController(Node):
     def __init__(self):
         super().__init__('dqn_controller')
 
-        self.declare_parameter('model_path', os.path.expanduser('~/dqn_cartpole.pt'))
+        self.declare_parameter('model_path', os.path.expanduser('~/dqn_cartpole_eq.pt'))
         model_path = self.get_parameter('model_path').value
 
         self.model = QNetwork()

@@ -52,7 +52,8 @@ class SimpleCartPoleEnv:
 
     def reset(self):
         self.t = 0.0
-        self.phases = np.random.uniform(0, 2*np.pi, size=3)
+        self.freqs = np.random.uniform(self.frequency_range[0], self.frequency_range[1], 5)
+        self.phases = np.random.uniform(0, 2*np.pi, size=5)
 
         self.state = np.array([
             np.random.uniform(-0.15, 0.15),   # x
@@ -66,7 +67,8 @@ class SimpleCartPoleEnv:
     def disturbance_force(self):
         force = 0.0
         for f, p in zip(self.freqs, self.phases):
-            force += self.base_amplitude * np.sin(2 * np.pi * f * self.t + p)
+            amplitude = self.base_amplitude * np.random.uniform(0.8, 1.2)
+            force += amplitude * np.sin(2 * np.pi * f * self.t + p)
         force += np.random.normal(0.0, self.noise_std)
         return float(force)
 
