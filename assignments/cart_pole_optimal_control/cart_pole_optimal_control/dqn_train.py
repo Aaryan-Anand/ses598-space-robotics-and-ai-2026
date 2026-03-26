@@ -15,7 +15,7 @@ from cart_pole_optimal_control.dqn_model import QNetwork, ReplayBuffer, ACTIONS,
 
 GAMMA = 0.99
 LR = 1e-3
-BATCH_SIZE = 64
+BATCH_SIZE = 256
 BUFFER_SIZE = 50000
 MIN_REPLAY_SIZE = 2000
 TARGET_UPDATE_EVERY = 500
@@ -88,6 +88,8 @@ class SimpleCartPoleEnv:
 def train():
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
+    print(f"Using device: {device}")
+
     env = SimpleCartPoleEnv()
     online_net = QNetwork().to(device)
     target_net = QNetwork().to(device)
@@ -125,7 +127,7 @@ def train():
             state = next_state
             episode_reward += reward
 
-            if len(replay) >= MIN_REPLAY_SIZE:
+            if len(replay) >= MIN_REPLAY_SIZE and step_count % 4 == 0:
                 states, actions, rewards, next_states, dones = replay.sample(BATCH_SIZE)
 
                 states = torch.tensor(states, dtype=torch.float32, device=device)
