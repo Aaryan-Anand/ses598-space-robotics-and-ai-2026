@@ -13,6 +13,9 @@ import matplotlib.pyplot as plt
 
 from cart_pole_optimal_control.dqn_model import QNetwork, ReplayBuffer, ACTIONS, normalize_state
 
+def wrap_angle(angle):
+    return (angle + np.pi) % (2 * np.pi) - np.pi
+
 GAMMA = 0.99
 LR = 1e-3
 BATCH_SIZE = 256
@@ -38,25 +41,45 @@ class SimpleCartPoleEnv:
         self.theta_limit = math.radians(45)
 
         self.state = None
+        self.t = 0.0
+
+        # Disturbance settings: mild earthquake-like forcing
+        self.base_amplitude = 3.0
+        self.noise_std = 0.75
+        self.freqs = np.array([0.6, 1.4, 2.3], dtype=np.float32)
+        self.phases = np.random.uniform(0, 2*np.pi, size=3)
 
     def reset(self):
+        self.t = 0.0
+        self.phases = np.random.uniform(0, 2*np.pi, size=3)
+
         self.state = np.array([
-            np.random.uniform(-0.1, 0.1),
-            np.random.uniform(-0.1, 0.1),
-            np.random.uniform(-0.1, 0.1),
-            np.random.uniform(-0.1, 0.1)
+            np.random.uniform(-0.15, 0.15),   # x
+            np.random.uniform(-0.20, 0.20),   # xdot
+            np.random.uniform(-0.12, 0.12),   # theta
+            np.random.uniform(-0.20, 0.20)    # thetadot
         ], dtype=np.float32)
+
         return self.state.copy()
+
+    def disturbance_force(self):
+        force = 0.0
+        for f, p in zip(self.freqs, self.phases):
+            force += self.base_amplitude * np.sin(2 * np.pi * f * self.t + p)
+        force += np.random.normal(0.0, self.noise_std)
+        return float(force)
 
     def step(self, u):
         x, xdot, theta, thetadot = self.state
 
-        # crude nonlinear-ish dynamics
+        disturbance = self.disturbance_force()
+        u_total = u + disturbance
+
         sin_t = np.sin(theta)
         cos_t = np.cos(theta)
         total_mass = self.M + self.m
 
-        temp = (u + self.m * self.L * thetadot**2 * sin_t) / total_mass
+        temp = (u_total + self.m * self.L * thetadot**2 * sin_t) / total_mass
         theta_acc = (self.g * sin_t - cos_t * temp) / (
             self.L * (4.0/3.0 - self.m * cos_t**2 / total_mass)
         )
@@ -64,24 +87,25 @@ class SimpleCartPoleEnv:
 
         x = x + self.dt * xdot
         xdot = xdot + self.dt * x_acc
-        theta = theta + self.dt * thetadot
+        theta = wrap_angle(theta + self.dt * thetadot)
         thetadot = thetadot + self.dt * theta_acc
+        self.t += self.dt
 
         self.state = np.array([x, xdot, theta, thetadot], dtype=np.float32)
 
         reward = (
             2.0
-            - 4.0 * (theta / 0.2) ** 2
-            - 1.0 * (x / 1.0) ** 2
-            - 0.1 * (xdot / 2.0) ** 2
-            - 0.1 * (thetadot / 2.0) ** 2
+            - 5.0 * (theta / 0.2) ** 2
+            - 1.25 * (x / 1.0) ** 2
+            - 0.15 * (xdot / 2.0) ** 2
+            - 0.15 * (thetadot / 2.0) ** 2
             - 0.0005 * (u ** 2)
         )
 
         done = abs(x) > self.x_limit or abs(theta) > self.theta_limit
 
         if done:
-            reward -= 100.0
+            reward -= 150.0
 
         return self.state.copy(), reward, done, {}
 
@@ -139,7 +163,8 @@ def train():
                 q_values = online_net(states).gather(1, actions)
 
                 with torch.no_grad():
-                    max_next_q = target_net(next_states).max(dim=1, keepdim=True)[0]
+                    next_actions = online_net(next_states).argmax(dim=1, keepdim=True)
+                    max_next_q = target_net(next_states).gather(1, next_actions)
                     target_q = rewards + GAMMA * max_next_q * (1.0 - dones)
 
                 loss = nn.MSELoss()(q_values, target_q)
@@ -162,7 +187,7 @@ def train():
 
         if episode_reward > best_reward:
             best_reward = episode_reward
-            torch.save(online_net.state_dict(), os.path.expanduser("~/dqn_cartpole.pt"))
+            torch.save(online_net.state_dict(), os.path.expanduser("~/dqn_cartpole_eq.pt"))
 
         print(f"Episode {episode+1}/{NUM_EPISODES} | reward={episode_reward:.2f} | epsilon={epsilon:.3f}")
 

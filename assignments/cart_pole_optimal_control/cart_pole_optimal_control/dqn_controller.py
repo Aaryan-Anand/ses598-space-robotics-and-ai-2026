@@ -17,6 +17,8 @@ from rclpy.qos import QoSProfile, ReliabilityPolicy, HistoryPolicy, DurabilityPo
 
 from cart_pole_optimal_control.dqn_model import QNetwork, ACTIONS, normalize_state
 
+def wrap_angle(angle):
+    return (angle + np.pi) % (2 * np.pi) - np.pi
 
 class DQNController(Node):
     def __init__(self):
@@ -31,6 +33,8 @@ class DQNController(Node):
 
         self.state = None
         self.state_initialized = False
+        self.raw_state = None
+        self.theta_offset = None
         self.start_time = None
         self.simulation_done = False
 
@@ -85,21 +89,43 @@ class DQNController(Node):
             cart_idx = msg.name.index('cart_to_base')
             pole_idx = msg.name.index('pole_joint')
 
+            raw_x = float(msg.position[cart_idx])
+            raw_xdot = float(msg.velocity[cart_idx])
+            raw_theta = float(msg.position[pole_idx])
+            raw_thetadot = float(msg.velocity[pole_idx])
+
+            # On first valid state, define current pole angle as the local upright reference
+            if self.theta_offset is None:
+                self.theta_offset = raw_theta
+
+            theta_corrected = wrap_angle(raw_theta - self.theta_offset)
+
+            self.raw_state = np.array([
+                raw_x,
+                raw_xdot,
+                raw_theta,
+                raw_thetadot
+            ], dtype=np.float32)
+
             self.state = np.array([
-                msg.position[cart_idx],
-                msg.velocity[cart_idx],
-                msg.position[pole_idx],
-                msg.velocity[pole_idx]
+                raw_x,
+                raw_xdot,
+                theta_corrected,
+                raw_thetadot
             ], dtype=np.float32)
 
             if not self.state_initialized:
                 self.state_initialized = True
                 self.start_time = self.get_clock().now().nanoseconds / 1e9
                 self.get_logger().info(
-                    f'Initial state: cart_pos={self.state[0]:.3f}, '
-                    f'cart_vel={self.state[1]:.3f}, '
-                    f'pole_angle={self.state[2]:.3f}, '
-                    f'pole_vel={self.state[3]:.3f}'
+                    f'Initial raw state: cart_pos={raw_x:.3f}, '
+                    f'cart_vel={raw_xdot:.3f}, '
+                    f'pole_angle_raw={raw_theta:.3f} rad ({np.degrees(raw_theta):.2f} deg), '
+                    f'pole_vel={raw_thetadot:.3f}'
+                )
+                self.get_logger().info(
+                    f'Using theta_offset={self.theta_offset:.3f} rad '
+                    f'({np.degrees(self.theta_offset):.2f} deg)'
                 )
 
         except (ValueError, IndexError) as e:
