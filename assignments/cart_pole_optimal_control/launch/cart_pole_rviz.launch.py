@@ -8,6 +8,8 @@ import os
 def generate_launch_description():
     pkg_share = FindPackageShare('cart_pole_optimal_control').find('cart_pole_optimal_control')
     urdf_model_path = os.path.join(pkg_share, 'models', 'cart_pole', 'model.urdf')
+    # Spawn using SDF (not URDF topic) so Gazebo plugin systems are preserved.
+    sdf_file_path = '/tmp/cart_pole_model.sdf'
     
     # Create and return launch description
     return LaunchDescription([
@@ -20,12 +22,19 @@ def generate_launch_description():
             output='screen'
         ),
 
+        # Convert URDF -> SDF on the fly and spawn from the SDF file.
+        # (Passing the raw SDF as a CLI string breaks argument parsing due to whitespace.)
+        ExecuteProcess(
+            cmd=['bash', '-lc', f'gz sdf -p \"{urdf_model_path}\" > \"{sdf_file_path}\"'],
+            output='screen'
+        ),
+
         # Spawn robot in Gazebo
         Node(
             package='ros_gz_sim',
             executable='create',
             arguments=[
-                '-topic', 'robot_description',
+                '-file', sdf_file_path,
                 '-name', 'cart_pole',
                 '-allow_renaming', 'true'
             ],
@@ -40,9 +49,9 @@ def generate_launch_description():
             output='screen',
             arguments=[
                 # Cart force command (ROS -> Gazebo)
-                '/model/cart_pole/joint/cart_to_base/cmd_force@std_msgs/msg/Float64]gz.msgs.Double',
+                '/model/cart_pole/joint/cart_to_base/cmd_force@std_msgs/msg/Float64]ignition.msgs.Double',
                 # Joint states (Gazebo -> ROS)
-                '/world/empty/model/cart_pole/joint_state@sensor_msgs/msg/JointState[gz.msgs.Model',
+                '/world/empty/model/cart_pole/joint_state@sensor_msgs/msg/JointState[ignition.msgs.Model',
                 # Clock (Gazebo -> ROS)
                 '/clock@rosgraph_msgs/msg/Clock[gz.msgs.Clock'
             ],
