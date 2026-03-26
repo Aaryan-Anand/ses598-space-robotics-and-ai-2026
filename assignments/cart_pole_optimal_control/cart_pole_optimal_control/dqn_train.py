@@ -19,7 +19,7 @@ BATCH_SIZE = 256
 BUFFER_SIZE = 50000
 MIN_REPLAY_SIZE = 2000
 TARGET_UPDATE_EVERY = 500
-NUM_EPISODES = 400
+NUM_EPISODES = 1000
 MAX_STEPS = 1000
 
 EPS_START = 1.0
@@ -41,10 +41,10 @@ class SimpleCartPoleEnv:
 
     def reset(self):
         self.state = np.array([
-            np.random.uniform(-0.05, 0.05),   # x
-            np.random.uniform(-0.05, 0.05),   # xdot
-            np.random.uniform(-0.05, 0.05),   # theta
-            np.random.uniform(-0.05, 0.05)    # thetadot
+            np.random.uniform(-0.1, 0.1),
+            np.random.uniform(-0.1, 0.1),
+            np.random.uniform(-0.1, 0.1),
+            np.random.uniform(-0.1, 0.1)
         ], dtype=np.float32)
         return self.state.copy()
 
@@ -70,18 +70,18 @@ class SimpleCartPoleEnv:
         self.state = np.array([x, xdot, theta, thetadot], dtype=np.float32)
 
         reward = (
-            1.0
-            - 2.0 * (theta / 0.35) ** 2
-            - 0.5 * (x / 2.5) ** 2
-            - 0.05 * (xdot / 3.0) ** 2
-            - 0.05 * (thetadot / 2.0) ** 2
-            - 0.001 * (u ** 2)
+            2.0
+            - 4.0 * (theta / 0.2) ** 2
+            - 1.0 * (x / 1.0) ** 2
+            - 0.1 * (xdot / 2.0) ** 2
+            - 0.1 * (thetadot / 2.0) ** 2
+            - 0.0005 * (u ** 2)
         )
 
         done = abs(x) > self.x_limit or abs(theta) > self.theta_limit
 
         if done:
-            reward -= 50.0
+            reward -= 100.0
 
         return self.state.copy(), reward, done, {}
 
