@@ -43,11 +43,12 @@ class SimpleCartPoleEnv:
         self.state = None
         self.t = 0.0
 
-        # Disturbance settings: mild earthquake-like forcing
-        self.base_amplitude = 3.0
-        self.noise_std = 0.75
-        self.freqs = np.array([0.6, 1.4, 2.3], dtype=np.float32)
-        self.phases = np.random.uniform(0, 2*np.pi, size=3)
+        # Disturbance settings matched more closely to runtime earthquake generator
+        self.base_amplitude = 12.0
+        self.frequency_range = (0.5, 4.0)
+        self.noise_std = self.base_amplitude * 0.1
+        self.freqs = np.random.uniform(self.frequency_range[0], self.frequency_range[1], 5)
+        self.phases = np.random.uniform(0, 2*np.pi, size=5)
 
     def reset(self):
         self.t = 0.0

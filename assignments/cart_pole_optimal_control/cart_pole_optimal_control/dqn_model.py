@@ -4,7 +4,7 @@ import numpy as np
 import torch
 import torch.nn as nn
 
-ACTIONS = np.array([-15, -10, -5, -2, 0, 2, 5, 10, 15], dtype=np.float32)
+ACTIONS = np.array([-100, -60, -30, -15, 0, 15, 30, 60, 100], dtype=np.float32)
 
 def normalize_state(state):
     x, xdot, theta, thetadot = state
