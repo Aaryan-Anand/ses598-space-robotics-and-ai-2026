@@ -90,8 +90,6 @@ def train():
     
     print(f"Using device: {device}")
 
-    print(f"Using device: {device}")
-
     env = SimpleCartPoleEnv()
     online_net = QNetwork().to(device)
     target_net = QNetwork().to(device)
