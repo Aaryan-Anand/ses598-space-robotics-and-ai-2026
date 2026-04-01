@@ -1,5 +1,5 @@
 from launch import LaunchDescription
-from launch.actions import ExecuteProcess
+from launch.actions import ExecuteProcess, SetEnvironmentVariable
 from launch.substitutions import Command
 from launch_ros.actions import Node
 from launch_ros.substitutions import FindPackageShare
@@ -10,6 +10,9 @@ def generate_launch_description():
     urdf_model_path = os.path.join(pkg_share, 'models', 'cart_pole', 'model.urdf')
     
     return LaunchDescription([
+        # Force ros_gz tools to use Harmonic message/transport types.
+        SetEnvironmentVariable('GZ_VERSION', 'harmonic'),
+
         # Robot state publisher
         Node(
             package='robot_state_publisher',
@@ -35,9 +38,9 @@ def generate_launch_description():
                 # Cart force command (ROS -> Gazebo)
                 '/model/cart_pole/joint/cart_to_base/cmd_force@std_msgs/msg/Float64]gz.msgs.Double',
                 # Joint states (Gazebo -> ROS)
-                '/world/empty/model/cart_pole/joint_state@sensor_msgs/msg/JointState[ignition.msgs.Model',
+                '/world/empty/model/cart_pole/joint_state@sensor_msgs/msg/JointState[gz.msgs.Model',
                 # Clock (Gazebo -> ROS)
-                '/clock@rosgraph_msgs/msg/Clock[ignition.msgs.Clock'
+                '/clock@rosgraph_msgs/msg/Clock[gz.msgs.Clock'
             ],
         ),
 

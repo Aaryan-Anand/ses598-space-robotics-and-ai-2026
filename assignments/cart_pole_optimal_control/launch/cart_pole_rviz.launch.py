@@ -1,5 +1,5 @@
 from launch import LaunchDescription
-from launch.actions import ExecuteProcess
+from launch.actions import ExecuteProcess, SetEnvironmentVariable
 from launch.substitutions import Command, LaunchConfiguration
 from launch_ros.actions import Node
 from launch_ros.substitutions import FindPackageShare
@@ -11,6 +11,9 @@ def generate_launch_description():
     
     # Create and return launch description
     return LaunchDescription([
+        # Force ros_gz tools to use Harmonic message/transport types.
+        SetEnvironmentVariable('GZ_VERSION', 'harmonic'),
+
         # Gazebo (headless mode)
         ExecuteProcess(
             cmd=['gz', 'sim', '-r', '-s', 'empty.sdf'],  # -s for headless mode
@@ -39,9 +42,9 @@ def generate_launch_description():
                 # Cart force command (ROS -> Gazebo)
                 '/model/cart_pole/joint/cart_to_base/cmd_force@std_msgs/msg/Float64]gz.msgs.Double',
                 # Joint states (Gazebo -> ROS)
-                '/world/empty/model/cart_pole/joint_state@sensor_msgs/msg/JointState[ignition.msgs.Model',
+                '/world/empty/model/cart_pole/joint_state@sensor_msgs/msg/JointState[gz.msgs.Model',
                 # Clock (Gazebo -> ROS)
-                '/clock@rosgraph_msgs/msg/Clock[ignition.msgs.Clock'
+                '/clock@rosgraph_msgs/msg/Clock[gz.msgs.Clock'
             ],
         ),
 
@@ -55,7 +58,8 @@ def generate_launch_description():
                 'robot_description': Command(['cat ', urdf_model_path]),
                 'publish_frequency': 50.0,  # Increased update frequency
                 'use_tf_static': True,
-                'ignore_timestamp': True
+                'ignore_timestamp': True,
+                'use_sim_time': True
             }]
         ),
 
@@ -64,7 +68,8 @@ def generate_launch_description():
             package='cart_pole_optimal_control',
             executable='state_republisher',
             name='state_republisher',
-            output='screen'
+            output='screen',
+            parameters=[{'use_sim_time': True}]
         ),
 
         # Force Visualizer
@@ -72,7 +77,8 @@ def generate_launch_description():
             package='cart_pole_optimal_control',
             executable='force_visualizer',
             name='force_visualizer',
-            output='screen'
+            output='screen',
+            parameters=[{'use_sim_time': True}]
         ),
 
         # LQR Controller
@@ -80,7 +86,8 @@ def generate_launch_description():
             package='cart_pole_optimal_control',
             executable='lqr_controller',
             name='lqr_controller',
-            output='screen'
+            output='screen',
+            parameters=[{'use_sim_time': True}]
         ),
 
         # Earthquake Force Generator
@@ -92,7 +99,8 @@ def generate_launch_description():
             parameters=[{
                 'base_amplitude': 15.0,  # Strong force amplitude (realistic setting)
                 'frequency_range': [0.5, 4.0],  # Wide frequency range (realistic setting)
-                'update_rate': 50.0  # Update rate in Hz
+                'update_rate': 50.0,  # Update rate in Hz
+                'use_sim_time': True
             }]
         ),
 
@@ -104,7 +112,8 @@ def generate_launch_description():
             output='screen',
             arguments=['-d', os.path.join(pkg_share, 'config', 'cart_pole.rviz')],
             parameters=[{
-                'update_rate': 50.0  # Match the publish frequency
+                'update_rate': 50.0,  # Match the publish frequency
+                'use_sim_time': True
             }]
         )
     ]) 
