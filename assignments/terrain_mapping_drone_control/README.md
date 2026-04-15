@@ -42,6 +42,7 @@ The assignment will be evaluated based on:
 ## Prerequisites
 
 - ROS2 Humble
+- [px4_msgs](https://github.com/PX4/px4_msgs) cloned into `~/ros2_ws/src` and built (see below)
 - PX4 SITL Simulator (Tested with PX4-Autopilot main branch 9ac03f03eb)
 - RTAB-Map ROS2 package
 - OpenCV
@@ -92,6 +93,17 @@ cd ~/ros2_ws/src
 ln -s ~/RAS-SES-598-Space-Robotics-and-AI/assignments/terrain_mapping_drone_control .
 ```
 
+### PX4 messages (`px4_msgs`)
+
+This package depends on [px4_msgs](https://github.com/PX4/px4_msgs). If `colcon` reports that `install/px4_msgs/share/px4_msgs/package.sh` is missing, clone and build `px4_msgs` in the same workspace:
+
+```bash
+cd ~/ros2_ws/src
+git clone https://github.com/PX4/px4_msgs.git
+```
+
+Pick a branch or tag that matches your PX4-Autopilot version if you see message definition mismatches at runtime.
+
 ### Copy PX4 Model Files
 
 Copy the custom PX4 model files to the PX4-Autopilot folder
@@ -110,9 +122,9 @@ chmod +x scripts/deploy_px4_model.sh
 ## Building and Running
 
 ```bash
-# Build the package
+# Build this package and any workspace dependencies (e.g. px4_msgs) in order
 cd ~/ros2_ws
-colcon build --packages-select terrain_mapping_drone_control --symlink-install
+colcon build --packages-up-to terrain_mapping_drone_control --symlink-install
 
 # Source the workspace
 source install/setup.bash
