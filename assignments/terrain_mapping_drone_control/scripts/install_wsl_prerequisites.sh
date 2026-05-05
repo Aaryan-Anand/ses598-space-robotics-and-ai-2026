@@ -78,6 +78,12 @@ git checkout "$PX4_COMMIT"
 git submodule sync --recursive
 git submodule update --init --recursive
 
+# Shallow or partial clones can omit NuttX tags; PX4's version header step then fails at configure time.
+if [[ -d "$PX4_DIR/platforms/nuttx/NuttX/nuttx/.git" ]]; then
+  info "Fetching NuttX tags (avoids px_update_git_header / IndexError on some clones)..."
+  git -C "$PX4_DIR/platforms/nuttx/NuttX/nuttx" fetch --tags origin 2>/dev/null || true
+fi
+
 UBUNTU_SH_ARGS=()
 if [[ "${INSTALL_PX4_NUTTX:-1}" == "0" ]]; then
   info "Skipping NuttX toolchain (INSTALL_PX4_NUTTX=0)."
