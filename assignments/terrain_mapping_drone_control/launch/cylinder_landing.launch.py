@@ -2,14 +2,30 @@
 
 from launch import LaunchDescription
 from launch_ros.actions import Node
-from launch.actions import DeclareLaunchArgument, ExecuteProcess, TimerAction
+from launch.actions import (
+    DeclareLaunchArgument,
+    ExecuteProcess,
+    SetEnvironmentVariable,
+    TimerAction,
+    UnsetEnvironmentVariable,
+)
 from launch.substitutions import LaunchConfiguration
 from ament_index_python.packages import get_package_share_directory
 import os
 
 def generate_launch_description():
     """Generate launch description for cylinder landing mission."""
-    
+
+    # WSLg exposes Wayland by default; Gazebo Harmonic + Qt6 often show no window without X11.
+    wsl_gui_env = []
+    if os.environ.get('WSL_DISTRO_NAME'):
+        wsl_gui_env = [
+            SetEnvironmentVariable('DISPLAY', os.environ.get('DISPLAY') or ':0'),
+            SetEnvironmentVariable('QT_QPA_PLATFORM', 'xcb'),
+            SetEnvironmentVariable('GDK_BACKEND', 'x11'),
+            UnsetEnvironmentVariable('WAYLAND_DISPLAY'),
+        ]
+
     # Get the package share directory
     pkg_share = get_package_share_directory('terrain_mapping_drone_control')
         
@@ -114,7 +130,9 @@ def generate_launch_description():
         output='screen'
     )
 
-    return LaunchDescription([
+    return LaunchDescription(
+        wsl_gui_env
+        + [
         DeclareLaunchArgument(
             'use_sim_time',
             default_value='True',
@@ -135,5 +153,6 @@ def generate_launch_description():
         TimerAction(
             period=3.0,
             actions=[bridge]
-        )
-    ]) 
+        ),
+        ]
+    )

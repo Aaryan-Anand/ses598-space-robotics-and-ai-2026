@@ -1,0 +1,3 @@
+# PX4 airframe snippets are sourced by /bin/sh; CRLF breaks SITL on WSL/Linux.
+scripts/*.sh text eol=lf
+models/px4_models/airframes/* text eol=lf

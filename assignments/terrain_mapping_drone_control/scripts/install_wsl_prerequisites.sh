@@ -60,6 +60,14 @@ sudo apt-get install -y -qq \
   libopencv-dev \
   python3-numpy
 
+# --- Gazebo Harmonic GUI on WSLg (Qt6 XCB + Mesa; fixes blank / missing window) ---
+info "Installing Gazebo GUI / Qt6 platform packages..."
+sudo apt-get install -y -qq \
+  qt6-qpa-plugins \
+  libqt6core6 libqt6gui6 libqt6widgets6 libqt6openglwidgets6 \
+  libxcb-cursor0 libxcb-xinerama0 libxkbcommon-x11-0 \
+  libegl1-mesa libgl1-mesa-dri mesa-utils libvulkan1 vulkan-tools
+
 # --- PX4-Autopilot @ course-tested commit ---
 PX4_COMMIT="9ac03f03eb"
 PX4_DIR="${PX4_DIR:-$HOME/PX4-Autopilot}"
@@ -78,6 +86,12 @@ git checkout "$PX4_COMMIT"
 git submodule sync --recursive
 git submodule update --init --recursive
 
+# Shallow or partial clones can omit NuttX tags; PX4's version header step then fails at configure time.
+if [[ -d "$PX4_DIR/platforms/nuttx/NuttX/nuttx/.git" ]]; then
+  info "Fetching NuttX tags (avoids px_update_git_header / IndexError on some clones)..."
+  git -C "$PX4_DIR/platforms/nuttx/NuttX/nuttx" fetch --tags origin 2>/dev/null || true
+fi
+
 UBUNTU_SH_ARGS=()
 if [[ "${INSTALL_PX4_NUTTX:-1}" == "0" ]]; then
   info "Skipping NuttX toolchain (INSTALL_PX4_NUTTX=0)."
@@ -86,6 +100,17 @@ fi
 
 info "Running PX4 Tools/setup/ubuntu.sh (sim + deps; may take several minutes)..."
 bash ./Tools/setup/ubuntu.sh "${UBUNTU_SH_ARGS[@]}"
+
+# ubuntu.sh runs pip against PX4's requirements.txt, which can upgrade NumPy to 2.x.
+# ROS 2 Humble's cv_bridge (Boost/pybind) is built against NumPy 1.x → import/crash errors otherwise.
+info "Pinning user-site NumPy to <2 for ROS Humble cv_bridge compatibility..."
+python3 -m pip install --user 'numpy>=1.20,<2'
+
+# Newer pip opencv-python wheels require NumPy 2; ROS nodes here use cv_bridge + apt python3-opencv.
+if python3 -m pip show opencv-python &>/dev/null || python3 -m pip show opencv-contrib-python &>/dev/null; then
+  info "Removing user-site opencv-python (incompatible with NumPy<2); apt python3-opencv remains."
+  python3 -m pip uninstall -y opencv-python opencv-contrib-python 2>/dev/null || true
+fi
 
 info "Done."
 echo ""
@@ -96,3 +121,7 @@ echo "Build SITL (first time is slow):"
 echo "  cd $PX4_DIR && make px4_sitl"
 echo ""
 echo "Then follow README: ros2 workspace symlink, deploy_px4_model.sh, colcon build."
+echo ""
+echo "If Gazebo still shows no window in WSL, open a new terminal and:"
+echo "  source .../terrain_mapping_drone_control/scripts/wsl_gazebo_gui_env.sh"
+echo "or re-run this script (Qt6 QPA plugins are installed above)."
