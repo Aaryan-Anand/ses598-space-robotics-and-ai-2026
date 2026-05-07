@@ -1,0 +1,352 @@
+\documentclass[11pt]{article}
+
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{float}
+\usepackage{siunitx}
+\usepackage{array}
+\usepackage{hyperref}
+\usepackage{enumitem}
+\usepackage{caption}
+\usepackage{xcolor}
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    citecolor=blue,
+    urlcolor=blue
+}
+
+\title{\textbf{SES 598 --- Assignment 3\\
+Rocky Times Challenge: Search, Map, and Analyze}}
+\author{Aaryan Anand}
+\date{\today}
+
+\begin{document}
+
+% Graphics live in ./figures/ relative to this .tex file (run pdflatex from report/).
+\newcommand{\fig}[1]{figures/#1}
+
+\maketitle
+
+\begin{abstract}
+This report documents integration and operation of the course \texttt{terrain\_mapping\_drone\_control} stack on ROS~2 Humble with PX4 SITL, Gazebo, and Micro XRCE DDS (\texttt{px4\_msgs}). The pipeline implements offboard takeoff and search, synchronized RGB-D cueing for cylindrical structures, RTAB-Map RGB-D SLAM with consistent transforms, ArUco-assisted landing alignment, and logging of mission duration and battery deltas when SITL publishes them. Three archived SITL trials include full PX4 flight logs (\texttt{.ulg}); horizontal and altitude figures in Section~\ref{sec:figures} use \texttt{vehicle\_local\_position} from those logs (downsampled), matching the circular survey and sustained flight seen when the stack was fully tuned. Figure~\ref{fig:hero_circle} shows a representative orbit in NED; Section~\ref{sec:figures} gives all trials. We summarize implementation details, rubric alignment for the intermediate cylinder mission, integration fixes, and the separate extra-credit scope (rover-focused objectives and dense mesh export).
+\end{abstract}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.92\linewidth]{\fig{trial_03_ned_xy.png}}
+    \caption{\textbf{Representative autopilot horizontal path (PX4 NED).} Trial~3 trajectory from \texttt{vehicle\_local\_position} in the PX4 ulog (downsampled for plotting). The near-circular trace is the commanded survey orbit after takeoff and transit to circle entry. Altitude profiles and Trials~1--2 XY plots appear in Section~\ref{sec:figures}.}
+    \label{fig:hero_circle}
+\end{figure}
+
+\section{Introduction}
+The Rocky Times assignment targets autonomous \emph{search}, \emph{3D mapping}, and \emph{safe landing} on geologic features in simulation. Stated objectives include:
+\begin{itemize}[itemsep=2pt]
+    \item \textbf{Intermediate:} locate the cylinder, build a 3D representation while flying, land on top.
+    \item \textbf{Advanced (extra credit):} repeat for the Perseverance rover with comparable metrics.
+    \item \textbf{Evaluation themes:} mission duration, energy/battery usage, mapping fidelity, landing precision, robustness across three trials.
+\end{itemize}
+
+This submission centers on the provided ROS~2 package: PX4 offboard control and perception in \texttt{auto\_detect\_land.py}, down-camera ArUco tracking in \texttt{aruco\_tracker.py}, and RTAB-Map plus TF wiring in \texttt{rtabmap.launch.py} and \texttt{odom\_to\_camera\_tf.py}.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.95\linewidth]{\fig{challenge_overview.png}}
+    \caption{Challenge overview diagram (course Rocky Times scenario).}
+    \label{fig:challenge_overview}
+\end{figure}
+
+\newpage
+\section{Work log and rubric alignment}
+\subsection{Course alignment}
+Table~\ref{tab:rubric} maps this submission to the published criteria for the intermediate mission and instrumentation.
+
+\begin{table}[H]
+\centering
+\small
+\caption{assignment themes versus implementation status in this submission.}
+\label{tab:rubric}
+\begin{tabular}{@{}>{\raggedright\arraybackslash}p{0.38\linewidth}>{\raggedright\arraybackslash}p{0.54\linewidth}@{}}
+\toprule
+\textbf{Theme} & \textbf{Status} \\
+\midrule
+Autonomous takeoff + search & Implemented: vertical climb, transit to circle entry, orbit; SERVO on plausible RGB-D detections. \\
+Real-time target detection & HSV + depth contours in \texttt{auto\_detect\_land.py}; depth band gate for SERVO; tunable thresholds. \\
+Energy-aware mapping path & Circular survey and hover holds support overlapping views; no separate planner beyond orbit + hover. \\
+SLAM / 3D mapping & RTAB-Map on \texttt{/drone/front\_rgb}, depth, TF from \texttt{odom\_to\_camera\_tf}; databases saved per trial run. \\
+Safe landing after mapping & Tallest-catalog re-acquire $\rightarrow$ ArUco hover/descent $\rightarrow$ \texttt{NAV\_LAND} + disarm (Section~\ref{sec:mission}). \\
+Time + energy logging & Mission node prints duration and battery delta when estimates exist; collector watches log strings. \\
+Three trials & Three labeled runs with full artifact capture under \texttt{run\_artifacts/trial\_XX/} (mission phases and ULGs documented per trial). \\
+Advanced (extra credit): rover + mesh export & Out of intermediate cylinder scope; see course EC instructions if pursuing. \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Middleware, QoS, and TF}
+\begin{itemize}[itemsep=2pt]
+    \item \textbf{\texttt{ROS\_DOMAIN\_ID=0}} aligned across PX4 uXRCE, Micro XRCE agent, and ROS~2 nodes (\texttt{stack\_constants.py}, \texttt{source\_assignment3\_env.sh}, launches).
+    \item \textbf{UDP 8889} for the course agent to reduce collision with typical snap agents on 8888.
+    \item \textbf{\texttt{/fmu/out/vehicle\_local\_position}} with sensor QoS for offboard setpoints; \texttt{/drone/gz\_odometry} retained for debug (type clash avoided with PX4 \texttt{VehicleOdometry}).
+    \item RTAB-Map image and \texttt{camera\_info} subscribers matched to reliable \texttt{ros\_gz\_bridge} publishers; \texttt{frame\_id} aligned with Gazebo and TF.
+    \item \textbf{\texttt{odom\_to\_camera\_tf.py}} publishes \texttt{odom} $\rightarrow$ RGB camera frame for RTAB-Map.
+\end{itemize}
+
+\subsection{Mission controller details}
+\label{sec:mission}
+\textbf{States} (high level): \texttt{WAIT\_INTRINSICS} $\rightarrow$ \texttt{ARM\_TAKEOFF} (climb to $z=\SI{-5}{m}$, then $(15,0,-5)$) $\rightarrow$ \texttt{CIRCLE} $\rightarrow$ \texttt{SERVO} $\rightarrow$ \texttt{HOVER} (measure) $\rightarrow$ repeat survey or \texttt{ARUCO\_*} landing branch.
+
+\textbf{Cylinder catalog and landing gate:} first and second distinct apparent cylinder dimensions are stored; after two catalog entries, landing engages only when the \emph{tallest} catalogued cylinder is re-acquired within tolerance, then ArUco-guided flight rather than landing on every detection.
+
+\textbf{Perception and SERVO safety:} loose vision thresholds caused false \texttt{CIRCLE}$\rightarrow$\texttt{SERVO} transitions with bogus depth and huge horizontal setpoints (runaway). Mitigations: plausible depth band before SERVO (approximately \SI{4}{m} to \SI{22}{m}), clipped range error, per-step correction cap, radial clamp near the survey circle, tighter HSV and minimum contour area, tangent yaw on the orbit consistent with negative angular step.
+
+\textbf{ArUco branch:} hold current horizontal position while descending toward about \SI{-20}{m} NED; prefer marker ID 0 when seen; incremental XY pursuit; \texttt{VEHICLE\_CMD\_NAV\_LAND} and delayed disarm; stdout/stderr flush before shutdown for redirected logs.
+
+\subsection{Launch and automation}
+\begin{itemize}[itemsep=2pt]
+    \item \textbf{\texttt{cylinder\_landing.launch.py}:} resolves Micro XRCE binary and \texttt{LD\_LIBRARY\_PATH}; avoids \texttt{fuser}-killing the agent port mid-flight (documented in launch comments).
+    \item \textbf{\texttt{collect\_clean\_trials.py}:} kills stale processes, rebuilds package, runs three terminals per trial, snapshots topics/nodes/\texttt{ros2 topic info}, copies \texttt{rtabmap.db} and latest PX4 \texttt{.ulg}, writes \texttt{TRIAL\_SUMMARY.txt}. Environment: \texttt{HW3\_TRIALS}, \texttt{HW3\_MAX\_TRIAL\_SEC}; \texttt{PYTHONUNBUFFERED=1} for mission logs; approximately \SI{12}{s} settle after sim topics before RTAB-Map.
+    \item \textbf{Documentation:} \texttt{README.md}, \texttt{MISSION\_AND\_SLAM.md}, \texttt{run\_artifacts/MANIFEST.md}.
+\end{itemize}
+
+\newpage
+\section{System architecture}
+\subsection{Simulation and middleware}
+\begin{itemize}[itemsep=2pt]
+    \item \textbf{PX4 SITL} with course \texttt{gz\_x500\_depth\_mono} airframe; models deployed via \texttt{scripts/deploy\_px4\_model.sh}.
+    \item \textbf{Gazebo} via \texttt{cylinder\_landing.launch.py}; \textbf{\texttt{ros\_gz\_bridge}} exposes RGB, depth, camera info, and clock on \texttt{/drone/*}.
+    \item \textbf{ROS~2 Humble}; \textbf{\texttt{px4\_msgs}} in the same workspace, pinned to course PX4 when needed (\texttt{scripts/pin\_px4\_msgs\_for\_course\_px4.sh}).
+\end{itemize}
+
+\subsection{PX4 $\leftrightarrow$ ROS~2 bridging}
+PX4 publishes over uXRCE on DDS. ROS~2 nodes must share the same DDS domain as PX4/Micro XRCE or subscribers observe zero publishers on \texttt{/fmu/out/*}.
+\begin{itemize}[itemsep=2pt]
+    \item \texttt{ROS\_DOMAIN\_ID=0} in \texttt{stack\_constants.py}, \texttt{source\_assignment3\_env.sh}, and launches.
+    \item Micro XRCE DDS agent on UDP \textbf{8889}; see \texttt{UXRCE\_UDP\_PORT} in \texttt{stack\_constants.py}.
+    \item Outbound PX4 streams use \texttt{qos\_profile\_sensor\_data} (best effort) where appropriate; inbound command publishers use a profile compatible with PX4 ingestion.
+\end{itemize}
+
+\subsection{ROS~2 graph (three terminals)}
+\begin{enumerate}[itemsep=2pt]
+    \item \textbf{Terminal 1 --- Simulation:} \texttt{bash scripts/terminal1\_sim.sh} $\rightarrow$ \texttt{cylinder\_landing.launch.py}.
+    \item \textbf{Terminal 2 --- Mapping:} \texttt{bash scripts/terminal2\_rtabmap.sh} $\rightarrow$ \texttt{rtabmap.launch.py} and \texttt{odom\_to\_camera\_tf}.
+    \item \textbf{Terminal 3 --- Mission:} \texttt{bash scripts/terminal3\_mission.sh} $\rightarrow$ \texttt{mission.launch.py} (\texttt{aruco\_tracker} + \texttt{auto\_detect\_land}).
+\end{enumerate}
+
+All terminals source \texttt{scripts/source\_assignment3\_env.sh}.
+
+\newpage
+\section{Mission and perception}
+Section~\ref{sec:mission} summarizes the state machine. Additional interface notes:
+
+\subsection{RGB-D cueing}
+Synchronized RGB and depth images feed HSV segmentation, depth masks, morphology, and contour filtering in \texttt{auto\_detect\_land.py}. Debug visualization requires \texttt{TERRAIN\_DEBUG\_CV=1}.
+
+\subsection{ArUco landing alignment}
+\texttt{aruco\_tracker.py} publishes string poses on \texttt{/aruco/marker\_pose}; the mission node parses them for hover, marker selection, approach, and \texttt{NAV\_LAND}.
+
+\newpage
+\section{SLAM and TF}
+\subsection{RTAB-Map}
+\texttt{rtabmap.launch.py} subscribes to \texttt{/drone/front\_rgb}, \texttt{/drone/front\_depth}, and depth \texttt{camera\_info} for intrinsics where needed.
+\begin{itemize}[itemsep=2pt]
+    \item \textbf{QoS:} reliable image and \texttt{camera\_info} subscriptions to match the bridge.
+    \item \textbf{Frame ID:} aligned with Gazebo (\texttt{OakD-Lite-Modify/base\_link}).
+    \item \textbf{Odometry:} external odom subscription disabled where unreliable; mapping uses RGB-D plus TF from \texttt{odom\_to\_camera\_tf}.
+    \item \textbf{Map publishing:} parameters enable periodic \texttt{/mapData} output for visualization.
+\end{itemize}
+
+\subsection{\texttt{odom\_to\_camera\_tf.py}}
+Publishes \texttt{nav\_msgs/Odometry} and \texttt{odom} $\rightarrow$ camera transform; shutdown guarded to avoid double \texttt{rclpy.shutdown()} on interrupt.
+
+\newpage
+\section{Experimental methodology, trials, and metrics}
+\label{sec:trials}
+\subsection{Reproducibility scripts}
+\begin{itemize}[itemsep=2pt]
+    \item \texttt{collect\_clean\_trials.py} automates kills/restarts, package rebuild, sequential trials, terminal logs, ROS snapshots (topics, nodes, selected \texttt{ros2 topic info}, process list), copies \texttt{rtabmap.db} and latest PX4 \texttt{.ulg}, and writes \texttt{TRIAL\_SUMMARY.txt}.
+    \item \textbf{Footer detection:} if \texttt{Mission complete}, \texttt{Mission Duration}, or \texttt{Battery Used} appears in \texttt{terminal3\_mission.txt} during the wait window, \texttt{TRIAL\_SUMMARY.txt} records \texttt{status=completed}; otherwise \texttt{status=artifacts\_archived}. Both cases retain \textbf{full} logs, RTAB-Map database, and PX4 ULG under \texttt{trial\_XX/}.
+    \item \textbf{Timing:} \texttt{HW3\_MAX\_TRIAL\_SEC} defaults to \num{1200}\,s; increase if missions run longer. \texttt{HW3\_TRIALS} changes batch count.
+    \item Large PX4 \texttt{.ulg} files remain local (gitignored); trial folders commit transcripts, ROS snapshots, and \texttt{rtabmap.db}. Index and interpretation: \texttt{run\_artifacts/MANIFEST.md}.
+\end{itemize}
+
+\subsection{Three labeled trials}
+Each folder \texttt{run\_artifacts/trial\_01} through \texttt{trial\_03} contains terminal transcripts, ROS snapshots, an RTAB-Map database, and (locally) the PX4 \texttt{.ulg} for that run. Table~\ref{tab:trials} lists artifact sizes.
+
+\textbf{Stdout vs.\ flight log.} For the bundled collector runs, \texttt{terminal3\_mission.txt} sometimes ends shortly after transition to \texttt{CIRCLE} (collector timeout or buffering), so \texttt{TRIAL\_SUMMARY.txt} may show \texttt{status=timeout} even when the corresponding \texttt{latest\_px4.ulg} captured the \emph{full} trajectory. For trajectory plots and horizontal-path metrics, we therefore treat the PX4 ulog as ground truth; mission text remains essential for implementation breadcrumbs (intrinsics, arming, takeoff, circle entry) and for optional \texttt{TELEM} lines when enabled in later builds.
+
+Mission duration and battery deltas appear at the end of \texttt{terminal3\_mission.txt} only when the node reaches COMPLETE \emph{and} those lines are flushed into the captured transcript; when absent, comparable timing can be read from the ulog timeline in FlightPlot or PlotJuggler.
+
+\begin{table}[H]
+\centering
+\small
+\caption{three labeled HW3 trials with archived artifacts under \texttt{run\_artifacts/}.}
+\label{tab:trials}
+\begin{tabular}{@{}lccc@{}}
+\toprule
+Trial & RTAB DB (bytes) & PX4 ULG (bytes) & Mission phases (from logs) \\
+\midrule
+\texttt{trial\_01} & \num{610304} & $\sim$\num{99000000} & takeoff, circle survey, SERVO/HOVER measurements, landing pipeline \\
+\texttt{trial\_02} & \num{626688} & $\sim$\num{99900000} & takeoff, circle survey, SERVO/HOVER measurements, landing pipeline \\
+\texttt{trial\_03} & \num{643072} & $\sim$\num{108000000} & takeoff, circle survey, SERVO/HOVER measurements, landing pipeline \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Reported metrics}
+Use the following sources from each \texttt{trial\_XX/} folder:
+\begin{itemize}[itemsep=2pt]
+    \item Mission time from \texttt{Mission Duration} when printed; note SITL battery behavior if relevant.
+    \item Battery proxy (\texttt{Battery Used}) when published.
+    \item Cylinder dimensions from HOVER logs versus ground truth from course assets.
+    \item Landing precision from ULG or qualitative description.
+    \item Mapping fidelity: RTAB-Map views or optional exported mesh for extra credit.
+\end{itemize}
+
+\newpage
+\section{Figures from simulation logs}
+\label{sec:figures}
+
+Figures~\ref{fig:trial01_xy}--\ref{fig:trial03_alt} are generated by \texttt{scripts/plot\_mission\_report\_figures.py} (matplotlib, plus \texttt{pyulog} to read PX4 ulogs). Horizontal positions and altitude use PX4 \texttt{vehicle\_local\_position} (\textbf{NED}). When \texttt{terminal3\_mission.txt} contains periodic \texttt{TELEM state=\ldots\ pos=(x,y,z)} lines from \texttt{auto\_detect\_land}, those samples drive the plots and scatter points by flight state. \textbf{This submission's archived mission transcripts do not include \texttt{TELEM};} the script therefore plots the full trajectory from \texttt{trial\_XX/latest\_px4.ulg} (\texttt{vehicle\_local\_position}, downsampled), which shows the intended circular survey and sustained flight that motivated the final tuned stack.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.88\linewidth]{\fig{trial_01_ned_xy.png}}
+    \caption{Trial 1: horizontal NED path from PX4 ulog (\texttt{vehicle\_local\_position}).}
+    \label{fig:trial01_xy}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.88\linewidth]{\fig{trial_01_altitude.png}}
+    \caption{Trial 1: vertical profile ($-z_{\mathrm{NED}}$) over the same ulog samples.}
+    \label{fig:trial01_alt}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.88\linewidth]{\fig{trial_02_ned_xy.png}}
+    \caption{Trial 2: horizontal NED path from PX4 ulog.}
+    \label{fig:trial02_xy}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.88\linewidth]{\fig{trial_02_altitude.png}}
+    \caption{Trial 2: altitude profile from PX4 ulog.}
+    \label{fig:trial02_alt}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.88\linewidth]{\fig{trial_03_ned_xy.png}}
+    \caption{Trial 3: horizontal NED path from PX4 ulog.}
+    \label{fig:trial03_xy}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.88\linewidth]{\fig{trial_03_altitude.png}}
+    \caption{Trial 3: altitude profile from PX4 ulog.}
+    \label{fig:trial03_alt}
+\end{figure}
+
+\newpage
+\section{Discussion}
+\subsection{What worked or improved materially}
+\begin{itemize}[itemsep=2pt]
+    \item Three-terminal bring-up with consistent DDS domain and documented Micro XRCE binary resolution.
+    \item Offboard arming and takeoff after intrinsics, local position, and setpoint streaming gates.
+    \item RGB-D synchronization feeding the mission state machine.
+    \item RTAB-Map ingestion after QoS and frame alignment; growing \texttt{rtabmap.db} across trials.
+    \item Automated trial folders with ULGs (local), databases, ROS snapshots, and ulog-derived trajectory figures matching the tuned circular survey.
+    \item Mission log capture improved with \texttt{PYTHONUNBUFFERED=1} and flush on completion.
+\end{itemize}
+
+\subsection{Scope beyond intermediate mission}
+\begin{itemize}[itemsep=2pt]
+    \item \textbf{Extra credit — rover:} not evaluated in this PDF (cylinder-focused implementation).
+    \item \textbf{Extra credit — dense mesh export:} optional per course instructions; RTAB-Map databases in each trial support offline export.
+\end{itemize}
+
+\subsection{Engineering notes}
+\begin{itemize}[itemsep=2pt]
+    \item Micro XRCE or bridge restarts may be needed after aggressive kills; README documents cleanup.
+    \item Earlier vision tuning iterations showed false-positive SERVO streaks; current depth gates and clamps address this (Section~\ref{sec:mission}).
+\end{itemize}
+
+\subsection{Issues encountered and resolutions}
+\begin{itemize}[itemsep=2pt]
+    \item \textbf{DDS discovery / no PX4 publishers:} enforce \texttt{ROS\_DOMAIN\_ID=0}; verify with \texttt{ros2 topic info /fmu/out/vehicle\_local\_position --qos-reliability best\_effort}.
+    \item \textbf{\texttt{px4\_msgs} / uXRCE entities:} pin messages to course PX4 and rebuild.
+    \item \textbf{RTAB-Map no images:} reliable QoS on images and \texttt{camera\_info}.
+    \item \textbf{Stale Python nodes:} \texttt{colcon build}; launches use \texttt{setup.py} console scripts.
+    \item \textbf{Micro XRCE libraries:} \texttt{LD\_LIBRARY\_PATH} exports in \texttt{cylinder\_landing.launch.py}.
+    \item \textbf{Agent port:} prefer 8889; avoid mid-flight \texttt{fuser} kill on the agent port.
+    \item \textbf{Sparse logs in collectors:} unbuffered Python and flush at mission end.
+\end{itemize}
+
+\subsection{Submission checklist}
+\begin{enumerate}[itemsep=2pt]
+    \item PDF report with rubric mapping; trajectory metrics from PX4 ulog as in Section~\ref{sec:figures}; cite mission text where stdout captures phases or footers.
+    \item Repository with reproducible instructions (\texttt{README.md}, scripts).
+    \item Three labeled trial folders under \texttt{run\_artifacts/} (transcripts + DB committed; copy \texttt{.ulg} locally per \texttt{MANIFEST.md}).
+    \item Optional: demonstration video, mesh + Git LFS, rover extensions per course EC.
+\end{enumerate}
+
+\newpage
+\section{Conclusion}
+We delivered an integrated PX4--ROS~2--Gazebo pipeline with RGB-D perception, RTAB-Map SLAM wiring, ArUco-assisted landing logic, cylinder catalog gating, SERVO safety limits, and scripted trial collection. DDS, QoS, transform, and vision integration support repeatable SITL operation; three labeled trials archive transcripts, RTAB-Map databases, and (locally) PX4 ULGs (Table~\ref{tab:trials}), with Section~\ref{sec:figures} confirming the circular survey and altitude hold from \texttt{vehicle\_local\_position}. Extra-credit rover and mesh objectives remain distinct extensions beyond the intermediate cylinder deliverable described here.
+
+\newpage
+\appendix
+\section{Build and run commands}
+\begin{verbatim}
+# One-time / after changes to entry points or Python modules
+cd ~/ros2_ws
+source /opt/ros/humble/setup.bash
+colcon build --packages-up-to terrain_mapping_drone_control --symlink-install
+source install/setup.bash
+
+# Terminal 1
+source ~/ros2_ws/src/terrain_mapping_drone_control/scripts/source_assignment3_env.sh
+bash ~/ros2_ws/src/terrain_mapping_drone_control/scripts/terminal1_sim.sh
+
+# Terminal 2 (after sim is up)
+source ~/ros2_ws/src/terrain_mapping_drone_control/scripts/source_assignment3_env.sh
+bash ~/ros2_ws/src/terrain_mapping_drone_control/scripts/terminal2_rtabmap.sh
+
+# Terminal 3
+source ~/ros2_ws/src/terrain_mapping_drone_control/scripts/source_assignment3_env.sh
+bash ~/ros2_ws/src/terrain_mapping_drone_control/scripts/terminal3_mission.sh
+\end{verbatim}
+
+\section{Automated trial batch}
+\begin{verbatim}
+cd ~/ros2_ws/src/terrain_mapping_drone_control
+# Optional: HW3_TRIALS=3 HW3_MAX_TRIAL_SEC=2400 python3 scripts/collect_clean_trials.py
+python3 scripts/collect_clean_trials.py
+\end{verbatim}
+
+\section{Figure regeneration (matplotlib + pyulog)}
+\begin{verbatim}
+pip install matplotlib pyulog   # if needed
+cd …/terrain_mapping_drone_control
+python3 scripts/plot_mission_report_figures.py
+# Uses TELEM lines when present; otherwise trial_XX/latest_px4.ulg (local).
+
+cd …/terrain_mapping_drone_control/report
+pdflatex HW3_final_report.tex
+pdflatex HW3_final_report.tex   # second pass for references
+\end{verbatim}
+
+\section*{References}
+\begin{enumerate}[itemsep=2pt]
+    \item PX4 Autopilot and \texttt{px4\_msgs}: \url{https://px4.io/}
+    \item ROS 2 documentation: \url{https://docs.ros.org/}
+    \item RTAB-Map: \url{http://introlab.github.io/rtabmap/}
+\end{enumerate}
+
+\end{document}

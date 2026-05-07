@@ -1,5 +1,4 @@
-from setuptools import setup, find_packages
-import os
+from setuptools import setup
 from glob import glob
 
 package_name = 'terrain_mapping_drone_control'
@@ -11,7 +10,7 @@ setup(
     data_files=[
         ('share/ament_index/resource_index/packages',
             ['resource/' + package_name]),
-        ('share/' + package_name, ['package.xml']),
+        ('share/' + package_name, ['package.xml', 'MISSION_AND_SLAM.md']),
         ('share/' + package_name + '/launch',
             glob('launch/*.launch.py')),
         ('share/' + package_name + '/config',
@@ -51,11 +50,12 @@ setup(
     entry_points={
         'console_scripts': [
             'cylinder_landing_node = terrain_mapping_drone_control.cylinder_landing_node:main',
-            'px4_odom_converter = terrain_mapping_drone_control.px4_odom_converter:main',
+            'odom_to_camera_tf = terrain_mapping_drone_control.odom_to_camera_tf:main',
             'feature_tracker = terrain_mapping_drone_control.feature_tracker:main',
             'pose_visualizer = terrain_mapping_drone_control.pose_visualizer:main',
             'spiral_trajectory = terrain_mapping_drone_control.spiral_trajectory:main',
             'aruco_tracker = terrain_mapping_drone_control.aruco_tracker:main',
+            'auto_detect_land = terrain_mapping_drone_control.auto_detect_land:main',
         ],
     },
     python_requires='>=3.8'

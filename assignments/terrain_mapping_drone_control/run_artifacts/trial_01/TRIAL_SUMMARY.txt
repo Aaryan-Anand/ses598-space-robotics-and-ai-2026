@@ -1,0 +1,22 @@
+# Canonical submission trial (May 2026). Mission stdout ends near circle entry; full path in latest_px4.ulg (see MANIFEST.md).
+status=timeout
+
+mission_key_lines:
+[auto_detect_land-2] [INFO] [1778122267.683749816] [cylinder_mission_node]: State WAIT_INTRINSICS: waiting for /drone/front_depth/camera_info (bridge starts ~10s after sim launch).
+[auto_detect_land-2] [INFO] [1778122267.700924640] [cylinder_mission_node]: Receiving /fmu/out/vehicle_local_position NED z=-0.01 (used for offboard setpoints and progress).
+[auto_detect_land-2] [INFO] [1778122267.712398546] [cylinder_mission_node]: Camera intrinsics received.
+[auto_detect_land-2] [INFO] [1778122269.184667004] [cylinder_mission_node]: Intrinsics + PX4 pose + 10 setpoint cycles OK. Moving to ARM_TAKEOFF.
+[auto_detect_land-2] [INFO] [1778122269.245521415] [cylinder_mission_node]: Arm command sent
+[auto_detect_land-2] [INFO] [1778122269.264744401] [cylinder_mission_node]: Arm command sent
+[auto_detect_land-2] [INFO] [1778122269.278244692] [cylinder_mission_node]: Arm command sent
+[auto_detect_land-2] [INFO] [1778122269.292600675] [cylinder_mission_node]: State ARM_TAKEOFF stage=0 pos=(0.03,0.00,-0.01) dist_to_subgoal=4.99m
+[auto_detect_land-2] [INFO] [1778122272.326099621] [cylinder_mission_node]: State ARM_TAKEOFF stage=0 pos=(0.02,0.03,0.01) dist_to_subgoal=5.01m
+[auto_detect_land-2] [INFO] [1778122275.408856706] [cylinder_mission_node]: State ARM_TAKEOFF stage=0 pos=(-0.01,0.02,-0.36) dist_to_subgoal=4.64m
+[auto_detect_land-2] [INFO] [1778122278.424256006] [cylinder_mission_node]: State ARM_TAKEOFF stage=0 pos=(0.02,-0.02,-3.92) dist_to_subgoal=1.08m
+[auto_detect_land-2] [INFO] [1778122280.569488823] [cylinder_mission_node]: Vertical takeoff complete. Proceeding to circle entry point.
+[auto_detect_land-2] [INFO] [1778122281.623427446] [cylinder_mission_node]: State ARM_TAKEOFF stage=1 pos=(0.54,-0.01,-4.81) dist_to_subgoal=14.47m
+[auto_detect_land-2] [INFO] [1778122284.714770288] [cylinder_mission_node]: State ARM_TAKEOFF stage=1 pos=(12.89,-0.23,-4.89) dist_to_subgoal=2.12m
+[auto_detect_land-2] [INFO] [1778122285.850585008] [cylinder_mission_node]: Reached circle entry point. Switching to CIRCLE.
+
+rtabmap.db: 610304 bytes
+latest_px4.ulg: 98992846 bytes

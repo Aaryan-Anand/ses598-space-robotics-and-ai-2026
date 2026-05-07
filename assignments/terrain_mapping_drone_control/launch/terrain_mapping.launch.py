@@ -102,7 +102,7 @@ def generate_launch_description():
         remappings=[
             ('/world/default/model/x500_gimbal_0/link/camera_link/sensor/camera/image', '/drone_camera'),
             ('/world/default/model/x500_gimbal_0/link/camera_link/sensor/camera/camera_info', '/drone_camera_info'),
-            ('/model/x500_gimbal_0/odometry_with_covariance', '/fmu/out/vehicle_odometry'),
+            ('/model/x500_gimbal_0/odometry_with_covariance', '/drone/gz_odometry'),
         ],
         output='screen'
     )

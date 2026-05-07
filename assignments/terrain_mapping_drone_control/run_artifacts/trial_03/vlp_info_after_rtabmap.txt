@@ -1,0 +1,20 @@
+Type: px4_msgs/msg/VehicleLocalPosition
+
+Publisher count: 1
+
+Node name: _CREATED_BY_BARE_DDS_APP_
+Node namespace: _CREATED_BY_BARE_DDS_APP_
+Topic type: px4_msgs/msg/VehicleLocalPosition
+Endpoint type: PUBLISHER
+GID: 01.0f.0f.35.78.90.2b.5a.00.00.00.00.00.00.2a.03.00.00.00.00.00.00.00.00
+QoS profile:
+  Reliability: BEST_EFFORT
+  History (Depth): UNKNOWN
+  Durability: TRANSIENT_LOCAL
+  Lifespan: Infinite
+  Deadline: Infinite
+  Liveliness: AUTOMATIC
+  Liveliness lease duration: Infinite
+
+Subscription count: 0
+

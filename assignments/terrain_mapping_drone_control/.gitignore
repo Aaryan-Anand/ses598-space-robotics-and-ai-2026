@@ -16,6 +16,32 @@ build/
 *.bag
 *.db3
 
+# Assignment 3 — commit transcript snapshots + RTAB DB + MANIFEST; omit PX4 *.ulg (often ~100 MB each)
+run_artifacts/*
+!run_artifacts/MANIFEST.md
+!run_artifacts/trial_01/
+!run_artifacts/trial_01/**
+!run_artifacts/trial_02/
+!run_artifacts/trial_02/**
+!run_artifacts/trial_03/
+!run_artifacts/trial_03/**
+
+# Vendored Micro XRCE DDS Agent clone (build from upstream; do not commit tree)
+scripts/Micro-XRCE-DDS-Agent/
+
+# PX4 flight logs (keep latest_px4.ulg next to trials locally; too large for normal git push)
+*.ulg
+
+# LaTeX build artifacts (report/)
+report/*.aux
+report/*.log
+report/*.out
+report/*.toc
+report/*.synctex.gz
+report/*.fdb_latexmk
+report/*.fls
+
+
 # IDEs
 .vscode/
 .idea/
