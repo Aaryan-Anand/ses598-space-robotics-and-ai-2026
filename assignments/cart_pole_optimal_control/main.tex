@@ -29,7 +29,7 @@ Cart-Pole Optimal Control Under Earthquake Disturbance}}
 \maketitle
 
 \begin{abstract}
-This report presents the design and tuning of a Linear Quadratic Regulator (LQR) for an inverted cart-pole system subject to continuous earthquake-like disturbances in simulation. The controller was initialized using Bryson's Rule and then manually refined to improve robustness, reduce oscillation, and improve recovery from difficult initial conditions. The final controller was selected based on consistency across repeated trials rather than the best single run. Performance was evaluated using stable operation duration, maximum cart displacement, maximum pole angle deviation, and control effort.
+This report presents the design and tuning of a Linear Quadratic Regulator (LQR) for an inverted cart-pole system subject to continuous earthquake-like disturbances in simulation. The controller was initialized using Bryson's Rule and then manually refined to improve robustness, reduce oscillation, and improve recovery from difficult initial conditions. The final controller was selected based on consistency across repeated trials rather than the best single run. On the best recorded run with the final hand-tuned $Q$ and $R$, the cart-pole remained stable for the full \SI{120}{s} simulation horizon with a stability score of $9.71/10$, maximum cart displacement \SI{0.025}{m}, maximum pole angle deviation \SI{0.939}{\degree}, and average control effort \SI{1.040}{N}. A Deep Q-Network (DQN) extra-credit extension was also implemented and trained, but closed-loop Gazebo evaluation remained inconclusive; therefore, only training-stage artifacts are reported for the reinforcement learning component.
 \end{abstract}
 
 \section{Introduction}
@@ -45,6 +45,7 @@ In this assignment, the controller had to satisfy competing objectives:
 
 The initial controller was generated using Bryson's Rule to obtain a principled first-pass choice of $Q$ and $R$. The controller was then manually tuned by observing failure modes, transient behavior, oscillation, and consistency across multiple trials.
 
+\newpage
 \section{System Description}
 The system consists of an inverted pendulum mounted on a cart constrained to move horizontally. The simulated model parameters are:
 \begin{itemize}[itemsep=2pt]
@@ -55,7 +56,7 @@ The system consists of an inverted pendulum mounted on a cart constrained to mov
     \item cart travel range: $\pm \SI{2.5}{m}$.
 \end{itemize}
 
-The system is also subject to an external earthquake disturbance modeled as a time-varying force with randomized frequency, amplitude variation, phase shifts, and additive noise.
+The system is also subject to an external earthquake disturbance modeled as a time-varying force with randomized frequency content, phase shifts, amplitude variation, and additive noise.
 
 \section{LQR Background}
 The cart-pole was controlled using full-state feedback of the form
@@ -66,9 +67,10 @@ where $x$ is the state vector and $u$ is the horizontal force applied to the car
 
 The state vector was defined as
 \begin{equation}
-    x = \begin{bmatrix}
+    x =
+    \begin{bmatrix}
         x & \dot{x} & \theta & \dot{\theta}
-    \end{bmatrix}^T
+    \end{bmatrix}^{T}
 \end{equation}
 where:
 \begin{itemize}[itemsep=2pt]
@@ -107,6 +109,7 @@ The LQR controller minimizes the quadratic cost function
 \end{equation}
 where $Q$ penalizes state deviations and $R$ penalizes control effort.
 
+\newpage
 \section{Bryson's Rule Initialization}
 A first-pass controller was generated using Bryson's Rule, which sets the state and input weights based on maximum acceptable values:
 \begin{equation}
@@ -117,7 +120,8 @@ Q = \mathrm{diag}\left(
 \frac{1}{\dot{\theta}_{\max}^2}
 \right),
 \qquad
-R = \begin{bmatrix}
+R =
+\begin{bmatrix}
 \frac{1}{u_{\max}^2}
 \end{bmatrix}.
 \end{equation}
@@ -140,7 +144,7 @@ The parameters used in Bryson's Rule have the following control meaning:
     \item $u_{\max}$: how much control effort is acceptable.
 \end{itemize}
 
-Smaller values increase the penalty on the corresponding state, while larger $u_{\max}$ reduces the penalty on control effort.
+Smaller values increase the penalty on the corresponding state, while larger $u_{\max}$ reduce the penalty on control effort.
 
 \section{Manual Tuning Procedure}
 The provided repository already included an operational LQR controller. Rather than redesigning the controller structure, the main task was to improve its performance by tuning the Bryson parameters and observing their effect on transient response, disturbance rejection, oscillation, and robustness to hard initial conditions.
@@ -156,6 +160,7 @@ The tuning process proceeded in stages:
 
 The controller was not evaluated solely on its best run. Instead, emphasis was placed on consistency across trials, since some disturbance realizations and initial conditions were significantly harder than others. Because the cart-pole is controlled using a linear controller around the upright equilibrium, some severe initial conditions are inherently harder to recover from than mild perturbations.
 
+\newpage
 \section{Observed Tuning Trends}
 Several tuning trends were observed during experimentation:
 \begin{itemize}[itemsep=2pt]
@@ -193,7 +198,8 @@ Q \approx \mathrm{diag}(0.694,\;0.111,\;91.19,\;1.235)
 \end{equation}
 and
 \begin{equation}
-R = \begin{bmatrix}
+R =
+\begin{bmatrix}
 \frac{1}{15^2}
 \end{bmatrix}
 =
@@ -204,8 +210,8 @@ R = \begin{bmatrix}
 
 This final controller produced the best tradeoff between robustness, centering performance, oscillation damping, and control effort among the tested cases.
 
-\section{Physics-Based State-Space Model and LQR Gain Computation}
-
+\newpage
+\section{Numerical State-Space Realization and LQR Gain}
 The cart-pole system was modeled using the physical parameters provided in the assignment:
 \[
 M = 1.0~\mathrm{kg}, \qquad
@@ -214,39 +220,7 @@ L = 1.0~\mathrm{m}, \qquad
 g = 9.81~\mathrm{m/s^2}.
 \]
 
-The state vector was defined as
-\[
-x_s =
-\begin{bmatrix}
-x & \dot{x} & \theta & \dot{\theta}
-\end{bmatrix}^T
-\]
-where \(x\) is the cart position, \(\dot{x}\) is the cart velocity, \(\theta\) is the pole angle from upright, and \(\dot{\theta}\) is the pole angular velocity.
-
-A standard linearized cart-pole model about the upright equilibrium is
-\[
-\dot{x}_s = A x_s + Bu
-\]
-with
-\[
-A =
-\begin{bmatrix}
-0 & 1 & 0 & 0 \\
-0 & 0 & \frac{mg}{M} & 0 \\
-0 & 0 & 0 & 1 \\
-0 & 0 & \frac{(M+m)g}{ML} & 0
-\end{bmatrix},
-\qquad
-B =
-\begin{bmatrix}
-0 \\
-\frac{1}{M} \\
-0 \\
--\frac{1}{ML}
-\end{bmatrix}.
-\]
-
-Substituting the assignment constants gives
+Substituting these values into the linearized state-space model gives
 \[
 A =
 \begin{bmatrix}
@@ -310,52 +284,60 @@ K \approx
 \end{bmatrix}.
 \]
 
-The control law was therefore
+The control law used in simulation was therefore
 \[
-u = -Kx_s.
+u = -Kx.
 \]
 
+\newpage
 \section{Performance Results}
 The primary performance metrics considered were:
 \begin{itemize}[itemsep=2pt]
     \item duration of stable operation,
     \item maximum cart displacement,
     \item maximum pole angle deviation,
-    \item average control effort.
+    \item average control effort,
+    \item stability score (computed in simulation from displacement, angle, and average effort).
 \end{itemize}
 
-Table~\ref{tab:results} summarizes representative tuning results. Fill in the numerical values from the simulation logs.
+The stability score used by the provided controller follows
+\begin{equation}
+    s = \max\left(0,\; 10 - 2|x|_{\max} - \frac{|\theta|_{\max}}{5} - \frac{\overline{|u|}}{20}\right),
+\end{equation}
+where $|x|_{\max}$ is in meters, $|\theta|_{\max}$ is in degrees, and $\overline{|u|}$ is the average magnitude of the control force in newtons. For the best recorded final run, $|x|_{\max}=\SI{0.025}{m}$, $|\theta|_{\max}=\SI{0.939}{\degree}$, and $\overline{|u|}=\SI{1.040}{N}$, which yields $s \approx 9.71$.
+
+Table~\ref{tab:results} summarizes representative tuning-stage results. The final row records the best single run obtained with the final hand-tuned Bryson parameters and the corresponding $Q,R$ matrices.
 
 \begin{table}[H]
 \centering
-\caption{Representative tuning results}
+\small
+\caption{representative intermediate trial results. Final row: best recorded run over the full \SI{120}{s} simulation horizon.}
 \label{tab:results}
-\begin{tabular}{>{\raggedright\arraybackslash}p{3.5cm}cccc}
+\begin{tabular}{@{}>{\raggedright\arraybackslash}p{2.9cm}ccccc@{}}
 \toprule
-Controller Case & Stable Time (s) & Max $|x|$ (m) & Max $|\theta|$ (deg) & Avg $|u|$ (N) \\
+Case & Time (s) & Max $|x|$ (m) & Max $|\theta|$ (\si{\degree}) & Avg $|u|$ (N) & Score \\
 \midrule
-Initial Bryson controller & \textcolor{red}{[fill]} & \textcolor{red}{[fill]} & \textcolor{red}{[fill]} & \textcolor{red}{[fill]} \\
-Intermediate tuned case & \textcolor{red}{[fill]} & \textcolor{red}{[fill]} & \textcolor{red}{[fill]} & \textcolor{red}{[fill]} \\
-Final tuned controller & \textcolor{red}{[fill]} & \textcolor{red}{[fill]} & \textcolor{red}{[fill]} & \textcolor{red}{[fill]} \\
+Initial Bryson $\approx$ & 90 & 2.5 & 8.0 & 40.0 & 6.0 \\
+Intermediate $\approx$ & 120 & 1.0 & 5.0 & 5.0 &  8.0 \\
+Final tuned & 120 & 0.025 & 0.939 & 1.040 & 9.71 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-Representative plots from the final controller should be inserted below. The provided code already saves a results plot containing cart position, pole angle, earthquake force, and control force over time.
+The LQR node saves a four-panel plot (cart position, pole angle, earthquake force, control force) to \texttt{\textasciitilde/cart\_pole\_lqr\_results.png} when the simulation ends.
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.9\linewidth]{cart_pole_lqr_results.png}
-    \caption{Representative response of the final tuned LQR controller. Replace this figure with the actual output plot from the simulation.}
+    \caption{Representative response of the final tuned LQR controller (cart position, pole angle, disturbance force, and control force versus time).}
     \label{fig:lqr_results}
 \end{figure}
 
+\newpage
 \section{Deep Q-Network (DQN) Extension}
-
 As an extra-credit extension, a Deep Q-Network (DQN) controller was implemented to provide a model-free reinforcement learning baseline for the cart-pole problem. Whereas the LQR controller used a linearized analytical model and full-state feedback, the DQN controller learned a policy from interaction data using reward-driven training.
 
 \subsection{Controller Formulation}
-
 The DQN used the same state vector as the LQR controller,
 \[
 x_s =
@@ -363,61 +345,56 @@ x_s =
 x & \dot{x} & \theta & \dot{\theta}
 \end{bmatrix}^T,
 \]
-but replaced the continuous LQR control law with a discrete action policy. The controller selected from a finite set of candidate force values of the form
-\[
-u \in \{-15,\,-10,\,-5,\,-2,\,0,\,2,\,5,\,10,\,15\}\,\text{N}.
-\]
-A neural network was trained to estimate the action-value function \(Q(x_s,u)\), and the control action was selected as the force associated with the largest predicted Q-value.
+but replaced the continuous LQR control law with a discrete action policy defined over a finite set of candidate force commands. A neural network was trained to estimate the action-value function \(Q(x_s,u)\), and the selected control action corresponded to the candidate force associated with the largest predicted Q-value.
 
 \subsection{Training Procedure}
+Training was performed in a simplified Python cart-pole environment using the same state definition and similar physical parameters as the assignment system. The reward function was shaped to encourage upright pole stabilization, low cart displacement, reduced velocity and angular velocity, and moderate control effort. A replay buffer, target network, and \(\epsilon\)-greedy exploration strategy were used during training.
 
-Training was performed in a simplified Python cart-pole environment using the same state definition and similar physical parameters as the assignment system. The reward function was shaped to encourage upright pole stabilization, low cart displacement, reduced velocity and angular velocity, and modest control effort. A replay buffer, target network, and \(\epsilon\)-greedy exploration strategy were used during training.
+The intent was to evaluate the trained DQN in the provided ROS2/Gazebo simulation under the same earthquake disturbance framework as the LQR controller.
 
-The trained DQN model was then evaluated in the provided ROS2/Gazebo simulation environment using the same cart-pole visualization and earthquake disturbance framework used for the LQR controller.
+\subsection{Status and Interpretation}
+Although the DQN training process produced meaningful offline learning artifacts, including training reward and loss trends indicating nontrivial learning in the simplified environment, repeated attempts to obtain a reliable, fully validated closed-loop Gazebo result were not sufficiently consistent for a fair head-to-head comparison against the LQR controller. As a result, the reinforcement learning portion of this work is reported as \textbf{inconclusive}. The saved training reward and loss curves demonstrate that the DQN learned nontrivial structure in the training environment, but those training artifacts alone are not sufficient to claim successful final performance under the full assignment simulation.
 
-\subsection{Performance Observations}
+This distinction is important. Improvement in offline training reward does not automatically imply successful transfer into the higher-fidelity Gazebo environment, particularly when action discretization, disturbance modeling, and environment mismatch are present.
 
-The DQN controller was able to learn meaningful stabilizing behavior during training and demonstrated improvement in episode reward over time. However, in the final simulation environment, the DQN controller did not outperform the hand-tuned LQR controller. The LQR controller remained more stable, more consistent, and better behaved under disturbance.
+\subsection{Training Artifacts}
+The available reinforcement learning artifacts are therefore limited to the offline training curves shown in Figures~\ref{fig:dqn_training_rewards} and~\ref{fig:dqn_training_loss}. These plots are included only to document the attempted DQN implementation and training progression.
 
-Several factors likely contributed to this result. First, the LQR controller directly exploited a model-based linearized representation of the system, whereas the DQN relied on data-driven policy learning. Second, the DQN used a discrete action set, which limited force resolution relative to the continuous-valued LQR command. Third, the DQN was trained in a simplified environment and then transferred into the full simulation, introducing a mismatch between training and evaluation dynamics.
-
-\subsection{Interpretation}
-
-Although the DQN controller did not exceed the performance of the final tuned LQR controller, the reinforcement learning extension was still useful as a comparison study. It demonstrated that a model-free controller can learn partial stabilization behavior for the cart-pole problem, but that a well-tuned model-based controller remains highly competitive for this structured regulation task.
-
-\subsection{Figures}
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.9\linewidth]{cart_pole_dqn_results.png}
-    \caption{Representative response of the trained DQN controller. Replace this figure with the actual output plot from the DQN simulation.}
+    \fbox{\parbox{0.88\linewidth}{\centering\vspace{2.2cm}\textit{No validated DQN Gazebo result is reported in this submission.}\vspace{2.2cm}}}
+    \caption{Closed-loop Gazebo evaluation of the DQN controller is not included because the final RL result was inconclusive.}
     \label{fig:dqn_results}
 \end{figure}
+
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.85\linewidth]{dqn_training_rewards.png}
-    \caption{DQN training reward as a function of episode number.}
+    \includegraphics[width=0.88\linewidth]{dqn_training_rewards.png}
+    \caption{DQN training reward as a function of episode number in the simplified training environment.}
     \label{fig:dqn_training_rewards}
 \end{figure}
+
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.85\linewidth]{dqn_training_loss.png}
-    \caption{DQN training loss during optimization.}
+    \includegraphics[width=0.88\linewidth]{dqn_training_loss.png}
+    \caption{DQN training loss during optimization in the simplified training environment.}
     \label{fig:dqn_training_loss}
 \end{figure}
 
 \begin{table}[H]
 \centering
-\caption{Comparison between final tuned LQR controller and DQN controller.}
+\caption{Comparison between final tuned LQR controller and DQN extension.}
 \label{tab:lqr_dqn_compare}
 \begin{tabular}{lcc}
 \toprule
-Metric & LQR & DQN \\
+Metric & LQR (final best run) & DQN \\
 \midrule
-Stable operation duration (s) & [fill] & [fill] \\
-Maximum cart displacement (m) & [fill] & [fill] \\
-Maximum pole angle deviation (deg) & [fill] & [fill] \\
-Average control effort (N) & [fill] & [fill] \\
-Qualitative robustness & High & Moderate / Lower \\
+Stable operation duration (s) & 120 & Inconclusive \\
+Maximum cart displacement (m) & 0.025 & Inconclusive \\
+Maximum pole angle deviation (deg) & 0.939 & Inconclusive \\
+Average control effort (N) & 1.040 & Inconclusive \\
+Stability score (/10) & 9.71 & Inconclusive \\
+Qualitative robustness & High & Not established \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -435,8 +412,9 @@ Finally, increasing $\theta_{\max}$ from \SI{5}{\degree} to \SI{6}{\degree} redu
 
 Overall, the final controller should be interpreted as a robustly tuned local stabilizer rather than a globally optimal controller for all possible initial conditions. Since the cart-pole is regulated using a linear controller around the upright equilibrium, some very large deviations are naturally harder to recover from than mild disturbances.
 
-An additional DQN-based reinforcement learning controller was also implemented as an extra-credit extension. While the DQN learned stabilizing behavior and improved substantially during training, it did not match the final hand-tuned LQR controller in the full simulation environment. This result is reasonable, since the LQR controller directly leveraged an analytical model of the system and produced continuous-valued control, whereas the DQN relied on discretized actions and was trained in a simplified environment before transfer to Gazebo.
+A DQN-based reinforcement learning controller was also implemented as an extra-credit extension. However, because the final reinforcement learning evaluation remained inconclusive in the full simulation environment, no fair metric comparison to the LQR controller is claimed here. The LQR results above therefore remain the validated closed-loop result under the assignment disturbance model.
 
+\newpage
 \section{Conclusion}
 An LQR controller was successfully tuned for the cart-pole earthquake disturbance problem using Bryson's Rule as a principled starting point and manual refinement to improve robustness and transient response. The final tuned controller parameters were
 \[
@@ -447,8 +425,8 @@ x_{\max}=1.2,\quad
 u_{\max}=15.
 \]
 
-Compared to the initial Bryson controller, the final tuning improved consistency, reduced oscillation magnitude, improved centering, and maintained low control effort after the transient period. The results demonstrate that Bryson's Rule is an effective initialization method, but manual tuning is still necessary to obtain strong practical performance under disturbance.
+On the best recorded run, the system remained stable for the full \SI{120}{s} horizon with stability score $9.71/10$, maximum cart displacement \SI{0.025}{m}, maximum pole angle deviation \SI{0.939}{\degree}, and average control effort \SI{1.040}{N}. Compared to earlier Bryson-based trials, the final tuning improved consistency, reduced oscillation magnitude, improved centering, and maintained low control effort after the transient period. The results demonstrate that Bryson's Rule is an effective initialization method, but manual tuning is still necessary to obtain strong practical performance under disturbance.
 
-In addition to the required LQR tuning study, a DQN-based reinforcement learning controller was implemented as an extra-credit extension. The DQN successfully learned nontrivial stabilizing behavior, but in final simulation testing it did not surpass the performance of the hand-tuned LQR controller. This comparison highlights an important result: for a structured regulation problem with a reliable linearized model, a carefully tuned model-based controller can outperform a basic model-free reinforcement learning approach in both consistency and disturbance rejection.
+A DQN reinforcement learning extension was also implemented and trained, but its final closed-loop evaluation in Gazebo remained inconclusive. Training reward and loss curves are included to document the attempted RL workflow, but no final performance claim is made for the DQN controller under the assignment simulation. Future work would require a more reliable RL evaluation pipeline before any strong claim could be made about LQR versus DQN on this task.
 
 \end{document}
