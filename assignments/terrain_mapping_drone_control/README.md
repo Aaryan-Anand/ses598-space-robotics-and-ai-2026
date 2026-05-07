@@ -2,6 +2,8 @@
 
 This ROS2 package implements an autonomous drone system for geological feature detection, mapping, and analysis using an RGBD camera and PX4 SITL simulation.
 
+**Written report PDF:** compile or open `report/HW3_final_report.pdf`. The file `HW3.pdf` in this folder is the **assignment handout**, not your submission report.
+
 ## Challenge Overview
 
 <img width="1195" height="1020" alt="image" src="https://github.com/user-attachments/assets/6e3d9610-a63a-4949-88a1-a14166a9ed50" />
