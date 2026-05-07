@@ -1,0 +1,4 @@
+# Colcon workspace outputs when the ROS 2 workspace root is this repository
+/build/
+/install/
+/log/
