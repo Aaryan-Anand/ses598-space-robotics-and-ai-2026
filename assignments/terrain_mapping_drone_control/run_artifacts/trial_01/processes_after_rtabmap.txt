@@ -1,0 +1,72 @@
+your 131072x1 screen size is bogus. expect trouble
+UID          PID    PPID  C STIME TTY          TIME CMD
+root           1       0  0 15:53 ?        00:00:00 /sbin/init
+root           2       1  0 15:53 ?        00:00:00 /init
+root           7       2  0 15:53 ?        00:00:18 plan9 --control-socket 7 --log-level 4 --server-fd 8 --pipe-fd 10 --log-truncate
+root          64       1  0 16:00 ?        00:00:00 /lib/systemd/systemd-journald
+root          89       1  0 16:00 ?        00:00:03 /lib/systemd/systemd-udevd
+root          99       1  0 16:00 ?        00:00:00 snapfuse /var/lib/snapd/snaps/core20_2769.snap /snap/core20/2769 -o ro,nodev,allow_other,suid
+root         100       1  0 16:00 ?        00:00:00 snapfuse /var/lib/snapd/snaps/micro-xrce-dds-agent_145.snap /snap/micro-xrce-dds-agent/145 -o ro,nodev,allow_other,suid
+root         103       1  0 16:00 ?        00:00:03 snapfuse /var/lib/snapd/snaps/snapd_26865.snap /snap/snapd/26865 -o ro,nodev,allow_other,suid
+systemd+     119       1  0 16:00 ?        00:00:00 /lib/systemd/systemd-resolved
+systemd+     125       1  0 16:00 ?        00:00:00 /lib/systemd/systemd-timesyncd
+avahi        216       1  0 16:00 ?        00:00:00 avahi-daemon: running [Lace-2.local]
+root         218       1  0 16:00 ?        00:00:00 /usr/sbin/cron -f -P
+message+     219       1  0 16:00 ?        00:00:00 @dbus-daemon --system --address=systemd: --nofork --nopidfile --systemd-activation --syslog-only
+root         224       1  0 16:00 ?        00:00:00 /usr/bin/python3 /usr/bin/networkd-dispatcher --run-startup-triggers
+root         225       1  0 16:00 ?        00:00:00 /usr/libexec/polkitd --no-debug
+syslog       226       1  0 16:00 ?        00:00:00 /usr/sbin/rsyslogd -n -iNONE
+root         229       1  0 16:00 ?        00:00:02 /snap/snapd/current/usr/lib/snapd/snapd
+root         232       1  0 16:00 ?        00:00:00 /lib/systemd/systemd-logind
+root         233       1  0 16:00 ?        00:00:00 /sbin/wpa_supplicant -u -s -O /run/wpa_supplicant
+avahi        238     216  0 16:00 ?        00:00:00 avahi-daemon: chroot helper
+root         263       1  0 16:00 hvc0     00:00:00 /sbin/agetty -o -p -- \u --noclear --keep-baud console 115200,38400,9600 vt220
+root         265       1  0 16:00 tty1     00:00:00 /sbin/agetty -o -p -- \u --noclear tty1 linux
+root         271       1  0 16:00 ?        00:00:00 /usr/bin/python3 /usr/share/unattended-upgrades/unattended-upgrade-shutdown --wait-for-signal
+root         471       2  0 16:00 pts/1    00:00:00 /bin/login -f
+aaryan       520       1  0 16:00 ?        00:00:00 /lib/systemd/systemd --user
+aaryan       521     520  0 16:00 ?        00:00:00 (sd-pam)
+aaryan       532     471  0 16:00 pts/1    00:00:00 -bash
+root       76999       1  0 18:27 ?        00:00:00 /usr/libexec/packagekitd
+root       80961       1  0 18:34 ?        00:00:00 /init
+aaryan     81012   80961  0 18:34 ?        00:00:02 /usr/bin/python3 -c from ros2cli.daemon.daemonize import main; main() --name ros2-daemon --ros-domain-id 11 --rmw-implementation rmw_fastrtps_cpp
+root       84272       2  0 18:44 ?        00:00:00 /init
+root       84273   84272  0 18:44 ?        00:00:00 /init
+aaryan     84279   84273  0 18:44 pts/0    00:00:00 -bash
+root       84560       2  0 18:46 ?        00:00:00 /init
+root       84561   84560  0 18:46 ?        00:00:00 /init
+aaryan     84567   84561  0 18:46 pts/2    00:00:00 -bash
+root       84615       2  0 18:46 ?        00:00:00 /init
+root       84616   84615  0 18:46 ?        00:00:00 /init
+aaryan     84617   84616  0 18:46 pts/3    00:00:00 -bash
+root       84665       2  0 18:46 ?        00:00:00 /init
+root       84666   84665  0 18:46 ?        00:00:00 /init
+aaryan     84667   84666  0 18:46 pts/4    00:00:00 -bash
+root       91701       2  0 19:12 ?        00:00:00 /init
+root       91702   91701  0 19:12 ?        00:00:00 /init
+aaryan     91708   91702  0 19:12 pts/8    00:00:00 bash -lc source /opt/ros/humble/setup.bash && source ~/ros2_ws/install/setup.bash && export ROS_DOMAIN_ID=0 && ros2 topic echo /drone/front_rgb --once --field header --no-daemon --spin-time 6 | sed -n "1,40p"; echo ---; ros2 topic echo /drone/front_depth --once --field header --no-daemon --spin-time 6 | sed -n "1,40p"; echo ---; ros2 topic echo /drone/gz_odometry --once --field header --no-daemon --spin-time 6 | sed -n "1,40p"
+aaryan     91789   91708  0 19:12 pts/8    00:00:03 /usr/bin/python3 /opt/ros/humble/bin/ros2 topic echo /drone/gz_odometry --once --field header --no-daemon --spin-time 6
+aaryan     91790   91708  0 19:12 pts/8    00:00:00 sed -n 1,40p
+root       96475       2  0 19:49 ?        00:00:00 /init
+root       96476   96475  0 19:49 ?        00:00:00 /init
+aaryan     96482   96476  0 19:49 pts/10   00:00:00 python3 /mnt/d/Projects/Repo/ses598-space-robotics-and-ai-2026/assignments/terrain_mapping_drone_control/scripts/collect_clean_trials.py
+aaryan     96551   96482  0 19:49 ?        00:00:00 /usr/bin/python3 /opt/ros/humble/bin/ros2 launch terrain_mapping_drone_control cylinder_landing.launch.py px4_autopilot_path:=/home/aaryan/PX4-Autopilot
+aaryan     96666   96551  1 19:49 ?        00:00:02 /usr/local/bin/MicroXRCEAgent udp4 -p 8889
+aaryan     96676   96551  0 19:49 ?        00:00:00 make px4_sitl gz_x500_depth_mono
+aaryan     96715   96676  0 19:49 ?        00:00:00 /bin/sh -c cmake --build "/home/aaryan/PX4-Autopilot/build/px4_sitl_default" --  gz_x500_depth_mono
+aaryan     96716   96715  0 19:49 ?        00:00:00 cmake --build /home/aaryan/PX4-Autopilot/build/px4_sitl_default -- gz_x500_depth_mono
+aaryan     96717   96716  0 19:49 ?        00:00:00 /usr/bin/ninja gz_x500_depth_mono
+aaryan     96718   96717  0 19:49 ?        00:00:00 /bin/sh -c cd /home/aaryan/PX4-Autopilot/build/px4_sitl_default/src/modules/simulation/gz_bridge && /usr/bin/cmake -E env PX4_SIM_MODEL=gz_x500_depth_mono /home/aaryan/PX4-Autopilot/build/px4_sitl_default/bin/px4
+aaryan     96719   96718  0 19:49 ?        00:00:00 /usr/bin/cmake -E env PX4_SIM_MODEL=gz_x500_depth_mono /home/aaryan/PX4-Autopilot/build/px4_sitl_default/bin/px4
+aaryan     96720   96719 23 19:49 ?        00:00:25 /home/aaryan/PX4-Autopilot/build/px4_sitl_default/bin/px4
+aaryan     96883   96476 99 19:49 ?        00:02:20 gz sim --verbose=1 -r -s /home/aaryan/PX4-Autopilot/Tools/simulation/gz/worlds/default.sdf
+aaryan     96884   96476 99 19:49 ?        00:01:46 gz sim -g
+aaryan     97317   96551 79 19:49 ?        00:01:19 /opt/ros/humble/lib/ros_gz_bridge/parameter_bridge /rgb_camera@sensor_msgs/msg/Image@gz.msgs.Image /rgb_camera/camera_info@sensor_msgs/msg/CameraInfo@gz.msgs.CameraInfo /depth_camera@sensor_msgs/msg/Image@gz.msgs.Image /depth_camera/points@sensor_msgs/msg/PointCloud2@gz.msgs.PointCloudPacked /camera_info@sensor_msgs/msg/CameraInfo@gz.msgs.CameraInfo /mono_camera@sensor_msgs/msg/Image@gz.msgs.Image /mono_camera/camera_info@sensor_msgs/msg/CameraInfo@gz.msgs.CameraInfo /clock@rosgraph_msgs/msg/Clock@gz.msgs.Clock /model/x500_depth_mono_0/odometry_with_covariance@nav_msgs/msg/Odometry@gz.msgs.OdometryWithCovariance --ros-args -r __node:=bridge --params-file /tmp/launch_params_xx_3r3jf -r /rgb_camera:=/drone/front_rgb -r /rgb_camera/camera_info:=/drone/front_rgb/camera_info -r /depth_camera:=/drone/front_depth -r /depth_camera/points:=/drone/front_depth/points -r /camera_info:=/drone/front_depth/camera_info -r /mono_camera:=/drone/down_mono -r /mono_camera/camera_info:=/drone/down_mono/camera_info -r /model/x500_depth_mono_0/odometry_with_covariance:=/drone/gz_odometry
+aaryan     98056   96482  0 19:50 ?        00:00:00 /usr/bin/python3 /opt/ros/humble/bin/ros2 launch terrain_mapping_drone_control rtabmap.launch.py
+aaryan     98167   98056  5 19:50 ?        00:00:02 /usr/bin/python3 /home/aaryan/ros2_ws/install/terrain_mapping_drone_control/lib/terrain_mapping_drone_control/odom_to_camera_tf --ros-args -r __node:=odom_to_camera_tf --params-file /tmp/launch_params_5l9idrfg
+aaryan     98169   98056  9 19:50 ?        00:00:04 /opt/ros/humble/lib/rtabmap_slam/rtabmap --ros-args -r __node:=rtabmap --params-file /tmp/launch_params_o8k2egpr -r rgb/image:=/drone/front_rgb -r rgb/camera_info:=/drone/front_depth/camera_info -r depth/image:=/drone/front_depth -r depth/camera_info:=/drone/front_depth/camera_info
+root       98777      89  0 19:51 ?        00:00:00 /lib/systemd/systemd-udevd
+root       98778      89  0 19:51 ?        00:00:00 /lib/systemd/systemd-udevd
+root       98779      89  0 19:51 ?        00:00:00 /lib/systemd/systemd-udevd
+root       98780      89  0 19:51 ?        00:00:00 /lib/systemd/systemd-udevd
+aaryan     98781   96482  0 19:51 pts/10   00:00:00 ps -ef

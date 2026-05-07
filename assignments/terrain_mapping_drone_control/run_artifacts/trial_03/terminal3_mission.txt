@@ -1,0 +1,57 @@
+[terminal3] ROS_DOMAIN_ID=0 (must match terminal 1)
+[INFO] [launch]: All log files can be found below /home/aaryan/.ros/log/2026-05-06-20-10-36-209996-Lace-104694
+[INFO] [launch]: Default logging verbosity is set to INFO
+[INFO] [aruco_tracker-1]: process started with pid [104738]
+[INFO] [auto_detect_land-2]: process started with pid [104740]
+[auto_detect_land-2] [INFO] [1778123437.027717896] [cylinder_mission_node]: Receiving /fmu/out/vehicle_local_position NED z=0.02 (used for offboard setpoints and progress).
+[auto_detect_land-2] [INFO] [1778123437.044397360] [cylinder_mission_node]: Camera intrinsics received.
+[auto_detect_land-2] [INFO] [1778123437.065140567] [cylinder_mission_node]: State WAIT_INTRINSICS: gates intrinsics=OK vlp=True setpoint_cycles=0/10 (need vlp + 10 cycles before ARM). If vlp stays false: check ROS_DOMAIN_ID, MicroXRCE agent, and `ros2 topic echo /fmu/out/vehicle_local_position --qos-reliability best_effort`.
+[auto_detect_land-2] [INFO] [1778123438.462249748] [cylinder_mission_node]: Locked battery_at_mission_start: 0.9889
+[auto_detect_land-2] [INFO] [1778123438.475530929] [cylinder_mission_node]: Intrinsics + PX4 pose + 10 setpoint cycles OK. Moving to ARM_TAKEOFF.
+[auto_detect_land-2] [INFO] [1778123438.488281325] [cylinder_mission_node]: Offboard mode command sent
+[auto_detect_land-2] [INFO] [1778123438.504063685] [cylinder_mission_node]: Offboard mode command sent
+[auto_detect_land-2] [INFO] [1778123438.516597019] [cylinder_mission_node]: Offboard mode command sent
+[auto_detect_land-2] [INFO] [1778123438.536601749] [cylinder_mission_node]: Arm command sent
+[auto_detect_land-2] [INFO] [1778123438.547094727] [cylinder_mission_node]: Arm command sent
+[auto_detect_land-2] [INFO] [1778123438.559889753] [cylinder_mission_node]: Arm command sent
+[auto_detect_land-2] [INFO] [1778123438.570913111] [cylinder_mission_node]: State ARM_TAKEOFF stage=0 pos=(0.02,0.01,0.02) dist_to_subgoal=5.02m
+[auto_detect_land-2] [INFO] [1778123441.506558322] [cylinder_mission_node]: State ARM_TAKEOFF stage=0 pos=(0.02,-0.00,0.02) dist_to_subgoal=5.02m
+[auto_detect_land-2] [INFO] [1778123444.538771036] [cylinder_mission_node]: State ARM_TAKEOFF stage=0 pos=(0.04,0.02,-0.63) dist_to_subgoal=4.37m
+[auto_detect_land-2] [INFO] [1778123447.589502806] [cylinder_mission_node]: State ARM_TAKEOFF stage=0 pos=(-0.04,-0.01,-4.08) dist_to_subgoal=0.92m
+[auto_detect_land-2] [INFO] [1778123449.371245513] [cylinder_mission_node]: Vertical takeoff complete. Proceeding to circle entry point.
+[auto_detect_land-2] [INFO] [1778123450.673596730] [cylinder_mission_node]: State ARM_TAKEOFF stage=1 pos=(1.29,-0.10,-4.86) dist_to_subgoal=13.71m
+[auto_detect_land-2] [INFO] [1778123453.745720000] [cylinder_mission_node]: State ARM_TAKEOFF stage=1 pos=(13.81,-0.12,-4.92) dist_to_subgoal=1.20m
+[auto_detect_land-2] [INFO] [1778123454.365464144] [cylinder_mission_node]: Reached circle entry point. Switching to CIRCLE.
+[WARNING] [launch]: user interrupted with ctrl-c (SIGINT)
+[INFO] [auto_detect_land-2]: sending signal 'SIGINT' to process[auto_detect_land-2]
+[INFO] [aruco_tracker-1]: sending signal 'SIGINT' to process[aruco_tracker-1]
+[aruco_tracker-1] Traceback (most recent call last):
+[aruco_tracker-1]   File "/home/aaryan/ros2_ws/install/terrain_mapping_drone_control/lib/terrain_mapping_drone_control/aruco_tracker", line 33, in <module>
+[aruco_tracker-1]     sys.exit(load_entry_point('terrain-mapping-drone-control', 'console_scripts', 'aruco_tracker')())
+[aruco_tracker-1]   File "/home/aaryan/ros2_ws/build/terrain_mapping_drone_control/terrain_mapping_drone_control/aruco_tracker.py", line 322, in main
+[auto_detect_land-2] Interrupted, shutting down.
+[auto_detect_land-2] Traceback (most recent call last):
+[auto_detect_land-2]   File "/home/aaryan/ros2_ws/install/terrain_mapping_drone_control/lib/terrain_mapping_drone_control/auto_detect_land", line 33, in <module>
+[auto_detect_land-2]     sys.exit(load_entry_point('terrain-mapping-drone-control', 'console_scripts', 'auto_detect_land')())
+[auto_detect_land-2]   File "/home/aaryan/ros2_ws/build/terrain_mapping_drone_control/terrain_mapping_drone_control/auto_detect_land.py", line 706, in main
+[aruco_tracker-1]   File "/opt/ros/humble/local/lib/python3.10/dist-packages/rclpy/__init__.py", line 229, in spin
+[aruco_tracker-1]     executor.spin_once()
+[aruco_tracker-1]   File "/opt/ros/humble/local/lib/python3.10/dist-packages/rclpy/executors.py", line 808, in spin_once
+[aruco_tracker-1]     self._spin_once_impl(timeout_sec)
+[aruco_tracker-1]   File "/opt/ros/humble/local/lib/python3.10/dist-packages/rclpy/executors.py", line 797, in _spin_once_impl
+[aruco_tracker-1]     handler, entity, node = self.wait_for_ready_callbacks(timeout_sec=timeout_sec)
+[aruco_tracker-1]   File "/opt/ros/humble/local/lib/python3.10/dist-packages/rclpy/executors.py", line 780, in wait_for_ready_callbacks
+[aruco_tracker-1]     return next(self._cb_iter)
+[aruco_tracker-1]   File "/opt/ros/humble/local/lib/python3.10/dist-packages/rclpy/executors.py", line 677, in _wait_for_ready_callbacks
+[aruco_tracker-1]     wait_set.wait(timeout_nsec)
+[aruco_tracker-1] KeyboardInterrupt
+[auto_detect_land-2]     node.destroy_node()
+[auto_detect_land-2]   File "/opt/ros/humble/local/lib/python3.10/dist-packages/rclpy/node.py", line 1685, in destroy_node
+[auto_detect_land-2]     self.destroy_publisher(self._publishers[0])
+[auto_detect_land-2]   File "/opt/ros/humble/local/lib/python3.10/dist-packages/rclpy/node.py", line 1565, in destroy_publisher
+[auto_detect_land-2]     publisher.destroy()
+[auto_detect_land-2]   File "/opt/ros/humble/local/lib/python3.10/dist-packages/rclpy/publisher.py", line 99, in destroy
+[auto_detect_land-2]     self.__publisher.destroy_when_not_in_use()
+[auto_detect_land-2] KeyboardInterrupt
+[ERROR] [aruco_tracker-1]: process has died [pid 104738, exit code -2, cmd '/home/aaryan/ros2_ws/install/terrain_mapping_drone_control/lib/terrain_mapping_drone_control/aruco_tracker --ros-args --log-level warn --ros-args -r __node:=aruco_tracker --params-file /tmp/launch_params_475fkvmg'].
+[ERROR] [auto_detect_land-2]: process has died [pid 104740, exit code -2, cmd '/home/aaryan/ros2_ws/install/terrain_mapping_drone_control/lib/terrain_mapping_drone_control/auto_detect_land --ros-args -r __node:=cylinder_mission_node --params-file /tmp/launch_params_xlp9ertn'].

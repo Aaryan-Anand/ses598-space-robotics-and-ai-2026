@@ -102,7 +102,30 @@ cd ~/ros2_ws/src
 git clone https://github.com/PX4/px4_msgs.git
 ```
 
-Pick a branch or tag that matches your PX4-Autopilot version if you see message definition mismatches at runtime.
+**Match `px4_msgs` to firmware** (required for PX4 @ `9ac03f03eb` from this course): if SITL logs show `uxrce_dds_client` **create entities failed** or ROS2 cannot arm via `/fmu/in/*`, pin messages and rebuild:
+
+```bash
+cd ~/ros2_ws/src/terrain_mapping_drone_control
+chmod +x scripts/pin_px4_msgs_for_course_px4.sh
+./scripts/pin_px4_msgs_for_course_px4.sh ~/ros2_ws/src/px4_msgs
+cd ~/ros2_ws && source /opt/ros/humble/setup.bash && colcon build --packages-select px4_msgs --symlink-install
+```
+
+**Micro XRCE DDS agent on Ubuntu/WSL:** a snap service often binds UDP **8888** (`snap.micro-xrce-dds-agent.daemon`). This stack starts its **own** agent on **8889** (and keeps `ROS_DOMAIN_ID=0` so PX4 DDS publishers are visible). The launch file prefers **`/usr/local/bin/MicroXRCEAgent`** or a non-snap binary on `PATH`.
+
+If you built the agent from source and see **`libmicroxrcedds_agent.so.*: cannot open shared object file`** while PX4 still runs, either:
+
+1. **Recommended (system-wide):** from your agent build directory, install libraries and refresh the loader cache:
+
+```bash
+cd ~/Micro-XRCE-DDS-Agent/build   # or wherever you cloned it
+sudo cmake --install .   # or: sudo make install
+sudo ldconfig
+```
+
+2. **No sudo:** `cylinder_landing.launch.py` prepends **`$HOME/Micro-XRCE-DDS-Agent/build`** (and the same path under `~/ros2_ws/src/terrain_mapping_drone_control/scripts/...`) to **`LD_LIBRARY_PATH`** before starting the agent. Override with **`export MICRO_XRCE_DDS_LIB_DIR=/path/to/dir/containing/libmicroxrcedds_agent.so`** if your build lives elsewhere.
+
+Set **`MICRO_XRCE_DDS_AGENT`** to a full path to force a specific binary. If you must use the snap agent only, expect possible uXRCE instability; `sudo snap stop micro-xrce-dds-agent` avoids a second agent on the machine.
 
 ### Copy PX4 Model Files
 
@@ -121,23 +144,69 @@ chmod +x scripts/deploy_px4_model.sh
 
 ## Building and Running
 
+One-time (or after changing Python entry points / launch files):
+
 ```bash
-# Build this package and any workspace dependencies (e.g. px4_msgs) in order
 cd ~/ros2_ws
+source /opt/ros/humble/setup.bash
 colcon build --packages-up-to terrain_mapping_drone_control --symlink-install
-
-# Source the workspace
 source install/setup.bash
-
-# Launch the simulation with visualization with your PX4-Autopilot path
-ros2 launch terrain_mapping_drone_control cylinder_landing.launch.py
-
-# OR you can change the default path in the launch file
-        DeclareLaunchArgument(
-            'px4_autopilot_path',
-            default_value=os.environ.get('HOME', '/home/' + os.environ.get('USER', 'user')) + '/PX4-Autopilot',
-            description='Path to PX4-Autopilot directory'),
+# Optional: `mission.launch.py` uses these install-space executables (must exist after build):
+# ros2 pkg executables terrain_mapping_drone_control | grep -E 'auto_detect_land|aruco_tracker'
 ```
+
+**Three terminals** (same machine, same `ROS_DOMAIN_ID`; default **`0`** via `scripts/source_assignment3_env.sh` — must match PX4 uXRCE / Micro XRCE DDS).
+
+### Typical workflow (three terminals)
+
+1. **Terminal 2 — RTAB-Map + TF** — run `terminal2_rtabmap.sh` so `/drone/rtab_odom` and the map/database update while you fly the mission trajectory.
+2. **Terminal 3 — mission** (if not already) — `aruco_tracker` + `auto_detect_land`: search, cylinder logic, hover/measure, then ArUco-assisted landing flow.
+3. **Tune** — HSV / detection thresholds in `auto_detect_land.py`, marker layout for `aruco_tracker.py`, and mission altitudes/states per `MISSION_AND_SLAM.md`.
+4. **Deliverables** — log **time** and **battery** deltas the nodes print at the end of a run; for extra credit export a mesh from RTAB-Map (see MISSION_AND_SLAM.md).
+
+Clean stale SITL/agent if the sim misbehaves:
+
+```bash
+killall -9 px4 MicroXRCEAgent micro-xrce-dds-agent 2>/dev/null || true
+pkill -f 'gz sim' 2>/dev/null || true
+fuser -k 8889/udp 2>/dev/null || true
+```
+
+**Terminal 1 — sim + Micro XRCE + Gazebo bridge**
+
+```bash
+source ~/ros2_ws/src/terrain_mapping_drone_control/scripts/source_assignment3_env.sh
+bash ~/ros2_ws/src/terrain_mapping_drone_control/scripts/terminal1_sim.sh
+```
+
+**Terminal 2 — RTAB-Map + TF (after the world is up)**
+
+```bash
+source ~/ros2_ws/src/terrain_mapping_drone_control/scripts/source_assignment3_env.sh
+bash ~/ros2_ws/src/terrain_mapping_drone_control/scripts/terminal2_rtabmap.sh
+```
+
+**Terminal 3 — mission (`aruco_tracker` + `auto_detect_land` via install executables)**
+
+```bash
+source ~/ros2_ws/src/terrain_mapping_drone_control/scripts/source_assignment3_env.sh
+bash ~/ros2_ws/src/terrain_mapping_drone_control/scripts/terminal3_mission.sh
+```
+
+Smoke test (while Terminal 1 is running). Use **`-s` / `--use-sim-time`** so rates use `/clock`:
+
+```bash
+source ~/ros2_ws/install/setup.bash
+source ~/ros2_ws/src/terrain_mapping_drone_control/scripts/source_assignment3_env.sh
+ros2 topic hz /clock -s --window 50
+ros2 topic hz /fmu/out/vehicle_local_position -s --window 50
+ros2 topic hz /drone/front_rgb -s --window 30
+```
+
+Mission / perception / SLAM notes: see [MISSION_AND_SLAM.md](./MISSION_AND_SLAM.md).
+
+**Written report (rubric mapping, trials, implementation summary):** compile `report/HW3_final_report.tex` to PDF (`pdflatex HW3_final_report.tex` from the `report/` directory). Figures under `report/figures/` come from `scripts/plot_mission_report_figures.py` run at the package root: `pip install matplotlib pyulog`, then `python3 scripts/plot_mission_report_figures.py`. The script prefers `TELEM` lines in `terminal3_mission.txt` when present; otherwise it plots `vehicle_local_position` from each `run_artifacts/trial_XX/latest_px4.ulg` (keep those `.ulg` files locally; they are gitignored).
+
 ## Extra credit -- 3D reconstruction (50 points)
 Use RTAB-Map or a SLAM ecosystem of your choice to map both rocks, and export the world as a mesh file, and upload to your repo. Use git large file system (LFS) if needed. 
 

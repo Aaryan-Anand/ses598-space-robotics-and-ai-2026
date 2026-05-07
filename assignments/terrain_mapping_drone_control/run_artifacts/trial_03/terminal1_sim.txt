@@ -1,0 +1,330 @@
+[terminal1] ROS_DOMAIN_ID=0  PX4_AUTOPILOT=/home/aaryan/PX4-Autopilot
+[terminal1] Stop stale SITL if you see 'PX4 server already running':  killall -9 px4 2>/dev/null; pkill -f 'gz sim' 2>/dev/null || true
+[INFO] [launch]: All log files can be found below /home/aaryan/.ros/log/2026-05-06-20-08-39-431220-Lace-102409
+[INFO] [launch]: Default logging verbosity is set to INFO
+[INFO] [bash-1]: process started with pid [102520]
+[bash-1] [35m[1778123320.115563][m info     | [34mUDPv4AgentLinux.cpp[m | [37minit                    [m | [32mrunning...[m             | port: 8889
+[bash-1] [35m[1778123320.115876][m info     | [34mRoot.cpp          [m | [37mset_verbose_level       [m | [32mlogger setup[m           | verbose_level: 4
+[INFO] [bash-2]: process started with pid [102530]
+[bash-2] [0/1] cd /home/aaryan/PX4-Autopilot/build/px4_sitl_default/src/modules/simulation/gz_bridge && /usr/bin/cmake -E env PX4_SIM_MODEL=gz_x500_depth_mono /home/aaryan/PX4-Autopilot/build/px4_sitl_default/bin/px4
+[bash-2] 
+[bash-2] ______  __   __    ___ 
+[bash-2] | ___ \ \ \ / /   /   |
+[bash-2] | |_/ /  \ V /   / /| |
+[bash-2] |  __/   /   \  / /_| |
+[bash-2] | |     / /^\ \ \___  |
+[bash-2] \_|     \/   \/     |_/
+[bash-2] 
+[bash-2] px4 starting.
+[bash-2] 
+[bash-2] INFO  [px4] startup script: /bin/sh etc/init.d-posix/rcS 0
+[bash-2] INFO  [init] found model autostart file as SYS_AUTOSTART=4022
+[bash-2] INFO  [param] selected parameter default file parameters.bson
+[bash-2] INFO  [param] importing from 'parameters.bson'
+[bash-2] INFO  [parameters] BSON document size 423 bytes, decoded 423 bytes (INT32:15, FLOAT:6)
+[bash-2] INFO  [param] selected parameter backup file parameters_backup.bson
+[bash-2] INFO  [dataman] data manager file './dataman' size is 7872608 bytes
+[bash-2] INFO  [init] Gazebo simulator
+[bash-2] INFO  [init] Starting gazebo with world: /home/aaryan/PX4-Autopilot/Tools/simulation/gz/worlds/default.sdf
+[bash-2] INFO  [init] Starting gz gui
+[bash-2] INFO  [init] Spawning model at position: 0 0 0.1
+[bash-2] INFO  [init] Spawning model
+[bash-2] INFO  [gz_bridge] world: default, model: x500_depth_mono_0
+[INFO] [create-3]: process started with pid [102804]
+[create-3] [INFO] [1778123324.516094451] [ros_gz_sim]: Requesting list of world names.
+[create-3] [INFO] [1778123324.803160051] [ros_gz_sim]: Requested creation of entity.
+[create-3] [INFO] [1778123324.803220957] [ros_gz_sim]: OK creation of entity.
+[INFO] [create-3]: process has finished cleanly [pid 102804]
+[INFO] [create-4]: process started with pid [102830]
+[create-4] [INFO] [1778123325.016562808] [ros_gz_sim]: Requesting list of world names.
+[create-4] [INFO] [1778123325.218019940] [ros_gz_sim]: Requested creation of entity.
+[create-4] [INFO] [1778123325.218077359] [ros_gz_sim]: OK creation of entity.
+[INFO] [create-4]: process has finished cleanly [pid 102830]
+[bash-2] INFO  [lockstep_scheduler] setting initial absolute time to 8000 us
+[bash-2] Dropped Escape call with ulEscapeCode : 0x03007703
+[bash-2] INFO  [init] Gazebo world is ready
+[bash-2] Dropped Escape call with ulEscapeCode : 0x03007703
+[bash-2] INFO  [commander] LED: open /dev/led0 failed (22)
+[bash-2] INFO  [tone_alarm] home set
+[bash-2] INFO  [uxrce_dds_client] init UDP agent IP:127.0.0.1, port:8889
+[bash-1] [35m[1778123328.045819][m info     | [34mRoot.cpp          [m | [37mcreate_client           [m | [32mcreate[m                 | client_key: 0x00000001, session_id: 0x81
+[bash-1] [35m[1778123328.045848][m info     | [34mSessionManager.hpp[m | [37mestablish_session       [m | [32msession established[m    | client_key: 0x00000001, address: 127.0.0.1:51672
+[bash-1] [35m[1778123328.049655][m info     | [34mProxyClient.cpp   [m | [37mcreate_participant      [m | [32mparticipant created[m    | client_key: 0x00000001, participant_id: 0x001(1)
+[bash-2] INFO  [mavlink] mode: Normal, data rate: 4000000 B/s on udp port 18570 remote port 14550
+[bash-2] INFO  [mavlink] mode: Onboard, data rate: 4000000 B/s on udp port 14580 remote port 14540
+[bash-2] INFO  [mavlink] mode: Onboard, data rate: 4000 B/s on udp port 14280 remote port 14030
+[bash-2] INFO  [mavlink] mode: Gimbal, data rate: 400000 B/s on udp port 13030 remote port 13280
+[bash-2] INFO  [logger] logger started (mode=all)
+[bash-2] INFO  [logger] Start file log (type: full)
+[bash-2] INFO  [logger] [logger] ./log/2026-05-07/03_08_48.ulg	
+[bash-2] INFO  [logger] Opened full log file: ./log/2026-05-07/03_08_48.ulg
+[bash-2] INFO  [mavlink] MAVLink only on localhost (set param MAV_{i}_BROADCAST = 1 to enable network)
+[bash-2] INFO  [mavlink] MAVLink only on localhost (set param MAV_{i}_BROADCAST = 1 to enable network)
+[bash-2] INFO  [px4] Startup script returned successfully
+[INFO] [parameter_bridge-5]: process started with pid [103160]
+[parameter_bridge-5] [INFO] [1778123329.538495397] [bridge]: Creating GZ->ROS Bridge: [/rgb_camera (gz.msgs.Image) -> /rgb_camera (sensor_msgs/msg/Image)] (Lazy 0)
+[parameter_bridge-5] [INFO] [1778123329.540153272] [bridge]: Creating ROS->GZ Bridge: [/rgb_camera (sensor_msgs/msg/Image) -> /rgb_camera (gz.msgs.Image)] (Lazy 0)
+[parameter_bridge-5] [INFO] [1778123329.540729555] [bridge]: Creating GZ->ROS Bridge: [/rgb_camera/camera_info (gz.msgs.CameraInfo) -> /rgb_camera/camera_info (sensor_msgs/msg/CameraInfo)] (Lazy 0)
+[parameter_bridge-5] [INFO] [1778123329.541133531] [bridge]: Creating ROS->GZ Bridge: [/rgb_camera/camera_info (sensor_msgs/msg/CameraInfo) -> /rgb_camera/camera_info (gz.msgs.CameraInfo)] (Lazy 0)
+[parameter_bridge-5] [INFO] [1778123329.541545793] [bridge]: Creating GZ->ROS Bridge: [/depth_camera (gz.msgs.Image) -> /depth_camera (sensor_msgs/msg/Image)] (Lazy 0)
+[parameter_bridge-5] [INFO] [1778123329.541849820] [bridge]: Creating ROS->GZ Bridge: [/depth_camera (sensor_msgs/msg/Image) -> /depth_camera (gz.msgs.Image)] (Lazy 0)
+[parameter_bridge-5] [INFO] [1778123329.542181379] [bridge]: Creating GZ->ROS Bridge: [/depth_camera/points (gz.msgs.PointCloudPacked) -> /depth_camera/points (sensor_msgs/msg/PointCloud2)] (Lazy 0)
+[parameter_bridge-5] [INFO] [1778123329.542574905] [bridge]: Creating ROS->GZ Bridge: [/depth_camera/points (sensor_msgs/msg/PointCloud2) -> /depth_camera/points (gz.msgs.PointCloudPacked)] (Lazy 0)
+[parameter_bridge-5] [INFO] [1778123329.543321842] [bridge]: Creating GZ->ROS Bridge: [/camera_info (gz.msgs.CameraInfo) -> /camera_info (sensor_msgs/msg/CameraInfo)] (Lazy 0)
+[parameter_bridge-5] [INFO] [1778123329.543829285] [bridge]: Creating ROS->GZ Bridge: [/camera_info (sensor_msgs/msg/CameraInfo) -> /camera_info (gz.msgs.CameraInfo)] (Lazy 0)
+[parameter_bridge-5] [INFO] [1778123329.544240845] [bridge]: Creating GZ->ROS Bridge: [/mono_camera (gz.msgs.Image) -> /mono_camera (sensor_msgs/msg/Image)] (Lazy 0)
+[parameter_bridge-5] [INFO] [1778123329.544618502] [bridge]: Creating ROS->GZ Bridge: [/mono_camera (sensor_msgs/msg/Image) -> /mono_camera (gz.msgs.Image)] (Lazy 0)
+[parameter_bridge-5] [INFO] [1778123329.545054539] [bridge]: Creating GZ->ROS Bridge: [/mono_camera/camera_info (gz.msgs.CameraInfo) -> /mono_camera/camera_info (sensor_msgs/msg/CameraInfo)] (Lazy 0)
+[parameter_bridge-5] [INFO] [1778123329.545427636] [bridge]: Creating ROS->GZ Bridge: [/mono_camera/camera_info (sensor_msgs/msg/CameraInfo) -> /mono_camera/camera_info (gz.msgs.CameraInfo)] (Lazy 0)
+[parameter_bridge-5] [INFO] [1778123329.545892027] [bridge]: Creating GZ->ROS Bridge: [/clock (gz.msgs.Clock) -> /clock (rosgraph_msgs/msg/Clock)] (Lazy 0)
+[parameter_bridge-5] [INFO] [1778123329.546386871] [bridge]: Creating ROS->GZ Bridge: [/clock (rosgraph_msgs/msg/Clock) -> /clock (gz.msgs.Clock)] (Lazy 0)
+[parameter_bridge-5] [INFO] [1778123329.547056396] [bridge]: Creating GZ->ROS Bridge: [/model/x500_depth_mono_0/odometry_with_covariance (gz.msgs.OdometryWithCovariance) -> /model/x500_depth_mono_0/odometry_with_covariance (nav_msgs/msg/Odometry)] (Lazy 0)
+[parameter_bridge-5] [INFO] [1778123329.548289785] [bridge]: Creating ROS->GZ Bridge: [/model/x500_depth_mono_0/odometry_with_covariance (nav_msgs/msg/Odometry) -> /model/x500_depth_mono_0/odometry_with_covariance (gz.msgs.OdometryWithCovariance)] (Lazy 0)
+[bash-2] pxh> INFO  [commander] [32mReady for takeoff![0m
+[bash-2] INFO  [uxrce_dds_client] synchronized with time offset 1778123330698413us
+[bash-1] [35m[1778123336.861656][m info     | [34mProxyClient.cpp   [m | [37mcreate_topic            [m | [32mtopic created[m          | client_key: 0x00000001, topic_id: 0x800(2), participant_id: 0x001(1)
+[bash-1] [35m[1778123336.861789][m info     | [34mProxyClient.cpp   [m | [37mcreate_subscriber       [m | [32msubscriber created[m     | client_key: 0x00000001, subscriber_id: 0x800(4), participant_id: 0x001(1)
+[bash-1] [35m[1778123336.862504][m info     | [34mProxyClient.cpp   [m | [37mcreate_datareader       [m | [32mdatareader created[m     | client_key: 0x00000001, datareader_id: 0x800(6), subscriber_id: 0x800(4)
+[bash-1] [35m[1778123336.862735][m info     | [34mProxyClient.cpp   [m | [37mcreate_topic            [m | [32mtopic created[m          | client_key: 0x00000001, topic_id: 0x801(2), participant_id: 0x001(1)
+[bash-1] [35m[1778123336.862756][m info     | [34mProxyClient.cpp   [m | [37mcreate_subscriber       [m | [32msubscriber created[m     | client_key: 0x00000001, subscriber_id: 0x801(4), participant_id: 0x001(1)
+[bash-1] [35m[1778123336.863167][m info     | [34mProxyClient.cpp   [m | [37mcreate_datareader       [m | [32mdatareader created[m     | client_key: 0x00000001, datareader_id: 0x801(6), subscriber_id: 0x801(4)
+[bash-1] [35m[1778123336.863376][m info     | [34mProxyClient.cpp   [m | [37mcreate_topic            [m | [32mtopic created[m          | client_key: 0x00000001, topic_id: 0x802(2), participant_id: 0x001(1)
+[bash-1] [35m[1778123336.863407][m info     | [34mProxyClient.cpp   [m | [37mcreate_subscriber       [m | [32msubscriber created[m     | client_key: 0x00000001, subscriber_id: 0x802(4), participant_id: 0x001(1)
+[bash-1] [35m[1778123336.863726][m info     | [34mProxyClient.cpp   [m | [37mcreate_datareader       [m | [32mdatareader created[m     | client_key: 0x00000001, datareader_id: 0x802(6), subscriber_id: 0x802(4)
+[bash-1] [35m[1778123336.863934][m info     | [34mProxyClient.cpp   [m | [37mcreate_topic            [m | [32mtopic created[m          | client_key: 0x00000001, topic_id: 0x803(2), participant_id: 0x001(1)
+[bash-1] [35m[1778123336.863964][m info     | [34mProxyClient.cpp   [m | [37mcreate_subscriber       [m | [32msubscriber created[m     | client_key: 0x00000001, subscriber_id: 0x803(4), participant_id: 0x001(1)
+[bash-1] [35m[1778123336.864292][m info     | [34mProxyClient.cpp   [m | [37mcreate_datareader       [m | [32mdatareader created[m     | client_key: 0x00000001, datareader_id: 0x803(6), subscriber_id: 0x803(4)
+[bash-1] [35m[1778123336.864565][m info     | [34mProxyClient.cpp   [m | [37mcreate_topic            [m | [32mtopic created[m          | client_key: 0x00000001, topic_id: 0x804(2), participant_id: 0x001(1)
+[bash-1] [35m[1778123336.864601][m info     | [34mProxyClient.cpp   [m | [37mcreate_subscriber       [m | [32msubscriber created[m     | client_key: 0x00000001, subscriber_id: 0x804(4), participant_id: 0x001(1)
+[bash-1] [35m[1778123336.864974][m info     | [34mProxyClient.cpp   [m | [37mcreate_datareader       [m | [32mdatareader created[m     | client_key: 0x00000001, datareader_id: 0x804(6), subscriber_id: 0x804(4)
+[bash-1] [35m[1778123336.865195][m info     | [34mProxyClient.cpp   [m | [37mcreate_topic            [m | [32mtopic created[m          | client_key: 0x00000001, topic_id: 0x805(2), participant_id: 0x001(1)
+[bash-1] [35m[1778123336.865241][m info     | [34mProxyClient.cpp   [m | [37mcreate_subscriber       [m | [32msubscriber created[m     | client_key: 0x00000001, subscriber_id: 0x805(4), participant_id: 0x001(1)
+[bash-1] [35m[1778123336.865637][m info     | [34mProxyClient.cpp   [m | [37mcreate_datareader       [m | [32mdatareader created[m     | client_key: 0x00000001, datareader_id: 0x805(6), subscriber_id: 0x805(4)
+[bash-1] [35m[1778123336.865856][m info     | [34mProxyClient.cpp   [m | [37mcreate_topic            [m | [32mtopic created[m          | client_key: 0x00000001, topic_id: 0x806(2), participant_id: 0x001(1)
+[bash-1] [35m[1778123336.865894][m info     | [34mProxyClient.cpp   [m | [37mcreate_subscriber       [m | [32msubscriber created[m     | client_key: 0x00000001, subscriber_id: 0x806(4), participant_id: 0x001(1)
+[bash-1] [35m[1778123336.866384][m info     | [34mProxyClient.cpp   [m | [37mcreate_datareader       [m | [32mdatareader created[m     | client_key: 0x00000001, datareader_id: 0x806(6), subscriber_id: 0x806(4)
+[bash-1] [35m[1778123336.866643][m info     | [34mProxyClient.cpp   [m | [37mcreate_topic            [m | [32mtopic created[m          | client_key: 0x00000001, topic_id: 0x807(2), participant_id: 0x001(1)
+[bash-1] [35m[1778123336.866688][m info     | [34mProxyClient.cpp   [m | [37mcreate_subscriber       [m | [32msubscriber created[m     | client_key: 0x00000001, subscriber_id: 0x807(4), participant_id: 0x001(1)
+[bash-1] [35m[1778123336.867098][m info     | [34mProxyClient.cpp   [m | [37mcreate_datareader       [m | [32mdatareader created[m     | client_key: 0x00000001, datareader_id: 0x807(6), subscriber_id: 0x807(4)
+[bash-1] [35m[1778123336.867343][m info     | [34mProxyClient.cpp   [m | [37mcreate_topic            [m | [32mtopic created[m          | client_key: 0x00000001, topic_id: 0x808(2), participant_id: 0x001(1)
+[bash-1] [35m[1778123336.867379][m info     | [34mProxyClient.cpp   [m | [37mcreate_subscriber       [m | [32msubscriber created[m     | client_key: 0x00000001, subscriber_id: 0x808(4), participant_id: 0x001(1)
+[bash-1] [35m[1778123336.867869][m info     | [34mProxyClient.cpp   [m | [37mcreate_datareader       [m | [32mdatareader created[m     | client_key: 0x00000001, datareader_id: 0x808(6), subscriber_id: 0x808(4)
+[bash-1] [35m[1778123336.868261][m info     | [34mProxyClient.cpp   [m | [37mcreate_topic            [m | [32mtopic created[m          | client_key: 0x00000001, topic_id: 0x809(2), participant_id: 0x001(1)
+[bash-1] [35m[1778123336.868325][m info     | [34mProxyClient.cpp   [m | [37mcreate_subscriber       [m | [32msubscriber created[m     | client_key: 0x00000001, subscriber_id: 0x809(4), participant_id: 0x001(1)
+[bash-1] [35m[1778123336.868869][m info     | [34mProxyClient.cpp   [m | [37mcreate_datareader       [m | [32mdatareader created[m     | client_key: 0x00000001, datareader_id: 0x809(6), subscriber_id: 0x809(4)
+[bash-1] [35m[1778123336.869136][m info     | [34mProxyClient.cpp   [m | [37mcreate_topic            [m | [32mtopic created[m          | client_key: 0x00000001, topic_id: 0x80A(2), participant_id: 0x001(1)
+[bash-1] [35m[1778123336.869181][m info     | [34mProxyClient.cpp   [m | [37mcreate_subscriber       [m | [32msubscriber created[m     | client_key: 0x00000001, subscriber_id: 0x80A(4), participant_id: 0x001(1)
+[bash-1] [35m[1778123336.869628][m info     | [34mProxyClient.cpp   [m | [37mcreate_datareader       [m | [32mdatareader created[m     | client_key: 0x00000001, datareader_id: 0x80A(6), subscriber_id: 0x80A(4)
+[bash-1] [35m[1778123336.869847][m info     | [34mProxyClient.cpp   [m | [37mcreate_topic            [m | [32mtopic created[m          | client_key: 0x00000001, topic_id: 0x80B(2), participant_id: 0x001(1)
+[bash-1] [35m[1778123336.869914][m info     | [34mProxyClient.cpp   [m | [37mcreate_subscriber       [m | [32msubscriber created[m     | client_key: 0x00000001, subscriber_id: 0x80B(4), participant_id: 0x001(1)
+[bash-1] [35m[1778123336.870334][m info     | [34mProxyClient.cpp   [m | [37mcreate_datareader       [m | [32mdatareader created[m     | client_key: 0x00000001, datareader_id: 0x80B(6), subscriber_id: 0x80B(4)
+[bash-1] [35m[1778123336.870604][m info     | [34mProxyClient.cpp   [m | [37mcreate_topic            [m | [32mtopic created[m          | client_key: 0x00000001, topic_id: 0x80C(2), participant_id: 0x001(1)
+[bash-1] [35m[1778123336.870669][m info     | [34mProxyClient.cpp   [m | [37mcreate_subscriber       [m | [32msubscriber created[m     | client_key: 0x00000001, subscriber_id: 0x80C(4), participant_id: 0x001(1)
+[bash-1] [35m[1778123336.871042][m info     | [34mProxyClient.cpp   [m | [37mcreate_datareader       [m | [32mdatareader created[m     | client_key: 0x00000001, datareader_id: 0x80C(6), subscriber_id: 0x80C(4)
+[bash-1] [35m[1778123336.871295][m info     | [34mProxyClient.cpp   [m | [37mcreate_topic            [m | [32mtopic created[m          | client_key: 0x00000001, topic_id: 0x80D(2), participant_id: 0x001(1)
+[bash-1] [35m[1778123336.871355][m info     | [34mProxyClient.cpp   [m | [37mcreate_subscriber       [m | [32msubscriber created[m     | client_key: 0x00000001, subscriber_id: 0x80D(4), participant_id: 0x001(1)
+[bash-1] [35m[1778123336.871838][m info     | [34mProxyClient.cpp   [m | [37mcreate_datareader       [m | [32mdatareader created[m     | client_key: 0x00000001, datareader_id: 0x80D(6), subscriber_id: 0x80D(4)
+[bash-1] [35m[1778123336.872079][m info     | [34mProxyClient.cpp   [m | [37mcreate_topic            [m | [32mtopic created[m          | client_key: 0x00000001, topic_id: 0x80E(2), participant_id: 0x001(1)
+[bash-1] [35m[1778123336.872144][m info     | [34mProxyClient.cpp   [m | [37mcreate_subscriber       [m | [32msubscriber created[m     | client_key: 0x00000001, subscriber_id: 0x80E(4), participant_id: 0x001(1)
+[bash-1] [35m[1778123336.872571][m info     | [34mProxyClient.cpp   [m | [37mcreate_datareader       [m | [32mdatareader created[m     | client_key: 0x00000001, datareader_id: 0x80E(6), subscriber_id: 0x80E(4)
+[bash-1] [35m[1778123336.872803][m info     | [34mProxyClient.cpp   [m | [37mcreate_topic            [m | [32mtopic created[m          | client_key: 0x00000001, topic_id: 0x80F(2), participant_id: 0x001(1)
+[bash-1] [35m[1778123336.872862][m info     | [34mProxyClient.cpp   [m | [37mcreate_subscriber       [m | [32msubscriber created[m     | client_key: 0x00000001, subscriber_id: 0x80F(4), participant_id: 0x001(1)
+[bash-1] [35m[1778123336.873313][m info     | [34mProxyClient.cpp   [m | [37mcreate_datareader       [m | [32mdatareader created[m     | client_key: 0x00000001, datareader_id: 0x80F(6), subscriber_id: 0x80F(4)
+[bash-1] [35m[1778123336.873551][m info     | [34mProxyClient.cpp   [m | [37mcreate_topic            [m | [32mtopic created[m          | client_key: 0x00000001, topic_id: 0x810(2), participant_id: 0x001(1)
+[bash-1] [35m[1778123336.873618][m info     | [34mProxyClient.cpp   [m | [37mcreate_subscriber       [m | [32msubscriber created[m     | client_key: 0x00000001, subscriber_id: 0x810(4), participant_id: 0x001(1)
+[bash-1] [35m[1778123336.874041][m info     | [34mProxyClient.cpp   [m | [37mcreate_datareader       [m | [32mdatareader created[m     | client_key: 0x00000001, datareader_id: 0x810(6), subscriber_id: 0x810(4)
+[bash-1] [35m[1778123336.874268][m info     | [34mProxyClient.cpp   [m | [37mcreate_topic            [m | [32mtopic created[m          | client_key: 0x00000001, topic_id: 0x811(2), participant_id: 0x001(1)
+[bash-1] [35m[1778123336.874315][m info     | [34mProxyClient.cpp   [m | [37mcreate_subscriber       [m | [32msubscriber created[m     | client_key: 0x00000001, subscriber_id: 0x811(4), participant_id: 0x001(1)
+[bash-1] [35m[1778123336.874739][m info     | [34mProxyClient.cpp   [m | [37mcreate_datareader       [m | [32mdatareader created[m     | client_key: 0x00000001, datareader_id: 0x811(6), subscriber_id: 0x811(4)
+[bash-1] [35m[1778123336.874971][m info     | [34mProxyClient.cpp   [m | [37mcreate_topic            [m | [32mtopic created[m          | client_key: 0x00000001, topic_id: 0x812(2), participant_id: 0x001(1)
+[bash-1] [35m[1778123336.875009][m info     | [34mProxyClient.cpp   [m | [37mcreate_subscriber       [m | [32msubscriber created[m     | client_key: 0x00000001, subscriber_id: 0x812(4), participant_id: 0x001(1)
+[bash-1] [35m[1778123336.875442][m info     | [34mProxyClient.cpp   [m | [37mcreate_datareader       [m | [32mdatareader created[m     | client_key: 0x00000001, datareader_id: 0x812(6), subscriber_id: 0x812(4)
+[bash-1] [35m[1778123336.875721][m info     | [34mProxyClient.cpp   [m | [37mcreate_topic            [m | [32mtopic created[m          | client_key: 0x00000001, topic_id: 0x813(2), participant_id: 0x001(1)
+[bash-1] [35m[1778123336.875785][m info     | [34mProxyClient.cpp   [m | [37mcreate_subscriber       [m | [32msubscriber created[m     | client_key: 0x00000001, subscriber_id: 0x813(4), participant_id: 0x001(1)
+[bash-1] [35m[1778123336.876219][m info     | [34mProxyClient.cpp   [m | [37mcreate_datareader       [m | [32mdatareader created[m     | client_key: 0x00000001, datareader_id: 0x813(6), subscriber_id: 0x813(4)
+[bash-1] [35m[1778123336.876437][m info     | [34mProxyClient.cpp   [m | [37mcreate_topic            [m | [32mtopic created[m          | client_key: 0x00000001, topic_id: 0x814(2), participant_id: 0x001(1)
+[bash-1] [35m[1778123336.876474][m info     | [34mProxyClient.cpp   [m | [37mcreate_subscriber       [m | [32msubscriber created[m     | client_key: 0x00000001, subscriber_id: 0x814(4), participant_id: 0x001(1)
+[bash-1] [35m[1778123336.876934][m info     | [34mProxyClient.cpp   [m | [37mcreate_datareader       [m | [32mdatareader created[m     | client_key: 0x00000001, datareader_id: 0x814(6), subscriber_id: 0x814(4)
+[bash-1] [35m[1778123336.877144][m info     | [34mProxyClient.cpp   [m | [37mcreate_topic            [m | [32mtopic created[m          | client_key: 0x00000001, topic_id: 0x815(2), participant_id: 0x001(1)
+[bash-1] [35m[1778123336.877182][m info     | [34mProxyClient.cpp   [m | [37mcreate_subscriber       [m | [32msubscriber created[m     | client_key: 0x00000001, subscriber_id: 0x815(4), participant_id: 0x001(1)
+[bash-1] [35m[1778123336.877580][m info     | [34mProxyClient.cpp   [m | [37mcreate_datareader       [m | [32mdatareader created[m     | client_key: 0x00000001, datareader_id: 0x815(6), subscriber_id: 0x815(4)
+[bash-1] [35m[1778123336.877835][m info     | [34mProxyClient.cpp   [m | [37mcreate_topic            [m | [32mtopic created[m          | client_key: 0x00000001, topic_id: 0x816(2), participant_id: 0x001(1)
+[bash-1] [35m[1778123336.877915][m info     | [34mProxyClient.cpp   [m | [37mcreate_subscriber       [m | [32msubscriber created[m     | client_key: 0x00000001, subscriber_id: 0x816(4), participant_id: 0x001(1)
+[bash-1] [35m[1778123336.878445][m info     | [34mProxyClient.cpp   [m | [37mcreate_datareader       [m | [32mdatareader created[m     | client_key: 0x00000001, datareader_id: 0x816(6), subscriber_id: 0x816(4)
+[bash-1] [35m[1778123336.878710][m info     | [34mProxyClient.cpp   [m | [37mcreate_topic            [m | [32mtopic created[m          | client_key: 0x00000001, topic_id: 0x817(2), participant_id: 0x001(1)
+[bash-1] [35m[1778123336.878755][m info     | [34mProxyClient.cpp   [m | [37mcreate_subscriber       [m | [32msubscriber created[m     | client_key: 0x00000001, subscriber_id: 0x817(4), participant_id: 0x001(1)
+[bash-1] [35m[1778123336.879124][m info     | [34mProxyClient.cpp   [m | [37mcreate_datareader       [m | [32mdatareader created[m     | client_key: 0x00000001, datareader_id: 0x817(6), subscriber_id: 0x817(4)
+[bash-1] [35m[1778123336.879366][m info     | [34mProxyClient.cpp   [m | [37mcreate_topic            [m | [32mtopic created[m          | client_key: 0x00000001, topic_id: 0x818(2), participant_id: 0x001(1)
+[bash-1] [35m[1778123336.879388][m info     | [34mProxyClient.cpp   [m | [37mcreate_subscriber       [m | [32msubscriber created[m     | client_key: 0x00000001, subscriber_id: 0x818(4), participant_id: 0x001(1)
+[bash-1] [35m[1778123336.879834][m info     | [34mProxyClient.cpp   [m | [37mcreate_datareader       [m | [32mdatareader created[m     | client_key: 0x00000001, datareader_id: 0x818(6), subscriber_id: 0x818(4)
+[bash-1] [35m[1778123336.880036][m info     | [34mProxyClient.cpp   [m | [37mcreate_topic            [m | [32mtopic created[m          | client_key: 0x00000001, topic_id: 0x819(2), participant_id: 0x001(1)
+[bash-1] [35m[1778123336.880067][m info     | [34mProxyClient.cpp   [m | [37mcreate_subscriber       [m | [32msubscriber created[m     | client_key: 0x00000001, subscriber_id: 0x819(4), participant_id: 0x001(1)
+[bash-1] [35m[1778123336.880390][m info     | [34mProxyClient.cpp   [m | [37mcreate_datareader       [m | [32mdatareader created[m     | client_key: 0x00000001, datareader_id: 0x819(6), subscriber_id: 0x819(4)
+[bash-1] [35m[1778123336.880625][m info     | [34mProxyClient.cpp   [m | [37mcreate_topic            [m | [32mtopic created[m          | client_key: 0x00000001, topic_id: 0x81A(2), participant_id: 0x001(1)
+[bash-1] [35m[1778123336.880680][m info     | [34mProxyClient.cpp   [m | [37mcreate_subscriber       [m | [32msubscriber created[m     | client_key: 0x00000001, subscriber_id: 0x81A(4), participant_id: 0x001(1)
+[bash-1] [35m[1778123336.881049][m info     | [34mProxyClient.cpp   [m | [37mcreate_datareader       [m | [32mdatareader created[m     | client_key: 0x00000001, datareader_id: 0x81A(6), subscriber_id: 0x81A(4)
+[bash-1] [35m[1778123336.882112][m info     | [34mProxyClient.cpp   [m | [37mcreate_replier          [m | [32mreplier created[m        | client_key: 0x00000001, requester_id: 0x800(7), participant_id: 0x001(1)
+[bash-1] [35m[1778123336.882400][m info     | [34mProxyClient.cpp   [m | [37mcreate_topic            [m | [32mtopic created[m          | client_key: 0x00000001, topic_id: 0x013(2), participant_id: 0x001(1)
+[bash-1] [35m[1778123336.882449][m info     | [34mProxyClient.cpp   [m | [37mcreate_publisher        [m | [32mpublisher created[m      | client_key: 0x00000001, publisher_id: 0x013(3), participant_id: 0x001(1)
+[bash-1] [35m[1778123336.882899][m info     | [34mProxyClient.cpp   [m | [37mcreate_datawriter       [m | [32mdatawriter created[m     | client_key: 0x00000001, datawriter_id: 0x013(5), publisher_id: 0x013(3)
+[bash-1] [35m[1778123336.883228][m info     | [34mProxyClient.cpp   [m | [37mcreate_topic            [m | [32mtopic created[m          | client_key: 0x00000001, topic_id: 0x053(2), participant_id: 0x001(1)
+[bash-1] [35m[1778123336.883284][m info     | [34mProxyClient.cpp   [m | [37mcreate_publisher        [m | [32mpublisher created[m      | client_key: 0x00000001, publisher_id: 0x053(3), participant_id: 0x001(1)
+[bash-1] [35m[1778123336.883654][m info     | [34mProxyClient.cpp   [m | [37mcreate_datawriter       [m | [32mdatawriter created[m     | client_key: 0x00000001, datawriter_id: 0x053(5), publisher_id: 0x053(3)
+[bash-1] [35m[1778123336.883855][m info     | [34mProxyClient.cpp   [m | [37mcreate_topic            [m | [32mtopic created[m          | client_key: 0x00000001, topic_id: 0x059(2), participant_id: 0x001(1)
+[bash-1] [35m[1778123336.883890][m info     | [34mProxyClient.cpp   [m | [37mcreate_publisher        [m | [32mpublisher created[m      | client_key: 0x00000001, publisher_id: 0x059(3), participant_id: 0x001(1)
+[bash-1] [35m[1778123336.884092][m info     | [34mProxyClient.cpp   [m | [37mcreate_datawriter       [m | [32mdatawriter created[m     | client_key: 0x00000001, datawriter_id: 0x059(5), publisher_id: 0x059(3)
+[bash-1] [35m[1778123336.884263][m info     | [34mProxyClient.cpp   [m | [37mcreate_topic            [m | [32mtopic created[m          | client_key: 0x00000001, topic_id: 0x08B(2), participant_id: 0x001(1)
+[bash-1] [35m[1778123336.884293][m info     | [34mProxyClient.cpp   [m | [37mcreate_publisher        [m | [32mpublisher created[m      | client_key: 0x00000001, publisher_id: 0x08B(3), participant_id: 0x001(1)
+[bash-1] [35m[1778123336.884482][m info     | [34mProxyClient.cpp   [m | [37mcreate_datawriter       [m | [32mdatawriter created[m     | client_key: 0x00000001, datawriter_id: 0x08B(5), publisher_id: 0x08B(3)
+[bash-1] [35m[1778123336.884661][m info     | [34mProxyClient.cpp   [m | [37mcreate_topic            [m | [32mtopic created[m          | client_key: 0x00000001, topic_id: 0x0B7(2), participant_id: 0x001(1)
+[bash-1] [35m[1778123336.884694][m info     | [34mProxyClient.cpp   [m | [37mcreate_publisher        [m | [32mpublisher created[m      | client_key: 0x00000001, publisher_id: 0x0B7(3), participant_id: 0x001(1)
+[bash-1] [35m[1778123336.884909][m info     | [34mProxyClient.cpp   [m | [37mcreate_datawriter       [m | [32mdatawriter created[m     | client_key: 0x00000001, datawriter_id: 0x0B7(5), publisher_id: 0x0B7(3)
+[bash-1] [35m[1778123336.885152][m info     | [34mProxyClient.cpp   [m | [37mcreate_topic            [m | [32mtopic created[m          | client_key: 0x00000001, topic_id: 0x0D6(2), participant_id: 0x001(1)
+[bash-1] [35m[1778123336.885201][m info     | [34mProxyClient.cpp   [m | [37mcreate_publisher        [m | [32mpublisher created[m      | client_key: 0x00000001, publisher_id: 0x0D6(3), participant_id: 0x001(1)
+[bash-1] [35m[1778123336.885515][m info     | [34mProxyClient.cpp   [m | [37mcreate_datawriter       [m | [32mdatawriter created[m     | client_key: 0x00000001, datawriter_id: 0x0D6(5), publisher_id: 0x0D6(3)
+[bash-1] [35m[1778123336.885704][m info     | [34mProxyClient.cpp   [m | [37mcreate_topic            [m | [32mtopic created[m          | client_key: 0x00000001, topic_id: 0x0ED(2), participant_id: 0x001(1)
+[bash-1] [35m[1778123336.885770][m info     | [34mProxyClient.cpp   [m | [37mcreate_publisher        [m | [32mpublisher created[m      | client_key: 0x00000001, publisher_id: 0x0ED(3), participant_id: 0x001(1)
+[bash-1] [35m[1778123336.886021][m info     | [34mProxyClient.cpp   [m | [37mcreate_datawriter       [m | [32mdatawriter created[m     | client_key: 0x00000001, datawriter_id: 0x0ED(5), publisher_id: 0x0ED(3)
+[bash-1] [35m[1778123336.886182][m info     | [34mProxyClient.cpp   [m | [37mcreate_topic            [m | [32mtopic created[m          | client_key: 0x00000001, topic_id: 0x108(2), participant_id: 0x001(1)
+[bash-1] [35m[1778123336.886273][m info     | [34mProxyClient.cpp   [m | [37mcreate_publisher        [m | [32mpublisher created[m      | client_key: 0x00000001, publisher_id: 0x108(3), participant_id: 0x001(1)
+[bash-1] [35m[1778123336.886499][m info     | [34mProxyClient.cpp   [m | [37mcreate_datawriter       [m | [32mdatawriter created[m     | client_key: 0x00000001, datawriter_id: 0x108(5), publisher_id: 0x108(3)
+[bash-1] [35m[1778123336.886663][m info     | [34mProxyClient.cpp   [m | [37mcreate_topic            [m | [32mtopic created[m          | client_key: 0x00000001, topic_id: 0x0FB(2), participant_id: 0x001(1)
+[bash-1] [35m[1778123336.886704][m info     | [34mProxyClient.cpp   [m | [37mcreate_publisher        [m | [32mpublisher created[m      | client_key: 0x00000001, publisher_id: 0x0FB(3), participant_id: 0x001(1)
+[bash-1] [35m[1778123336.886883][m info     | [34mProxyClient.cpp   [m | [37mcreate_datawriter       [m | [32mdatawriter created[m     | client_key: 0x00000001, datawriter_id: 0x0FB(5), publisher_id: 0x0FB(3)
+[bash-1] [35m[1778123336.887043][m info     | [34mProxyClient.cpp   [m | [37mcreate_topic            [m | [32mtopic created[m          | client_key: 0x00000001, topic_id: 0x102(2), participant_id: 0x001(1)
+[bash-1] [35m[1778123336.887098][m info     | [34mProxyClient.cpp   [m | [37mcreate_publisher        [m | [32mpublisher created[m      | client_key: 0x00000001, publisher_id: 0x102(3), participant_id: 0x001(1)
+[bash-1] [35m[1778123336.887323][m info     | [34mProxyClient.cpp   [m | [37mcreate_datawriter       [m | [32mdatawriter created[m     | client_key: 0x00000001, datawriter_id: 0x102(5), publisher_id: 0x102(3)
+[bash-1] [35m[1778123336.887579][m info     | [34mProxyClient.cpp   [m | [37mcreate_topic            [m | [32mtopic created[m          | client_key: 0x00000001, topic_id: 0x103(2), participant_id: 0x001(1)
+[bash-1] [35m[1778123336.887618][m info     | [34mProxyClient.cpp   [m | [37mcreate_publisher        [m | [32mpublisher created[m      | client_key: 0x00000001, publisher_id: 0x103(3), participant_id: 0x001(1)
+[bash-1] [35m[1778123336.887843][m info     | [34mProxyClient.cpp   [m | [37mcreate_datawriter       [m | [32mdatawriter created[m     | client_key: 0x00000001, datawriter_id: 0x103(5), publisher_id: 0x103(3)
+[bash-1] [35m[1778123336.888048][m info     | [34mProxyClient.cpp   [m | [37mcreate_topic            [m | [32mtopic created[m          | client_key: 0x00000001, topic_id: 0x105(2), participant_id: 0x001(1)
+[bash-1] [35m[1778123336.888108][m info     | [34mProxyClient.cpp   [m | [37mcreate_publisher        [m | [32mpublisher created[m      | client_key: 0x00000001, publisher_id: 0x105(3), participant_id: 0x001(1)
+[bash-1] [35m[1778123336.888375][m info     | [34mProxyClient.cpp   [m | [37mcreate_datawriter       [m | [32mdatawriter created[m     | client_key: 0x00000001, datawriter_id: 0x105(5), publisher_id: 0x105(3)
+[bash-1] [35m[1778123336.888553][m info     | [34mProxyClient.cpp   [m | [37mcreate_topic            [m | [32mtopic created[m          | client_key: 0x00000001, topic_id: 0x109(2), participant_id: 0x001(1)
+[bash-1] [35m[1778123336.888588][m info     | [34mProxyClient.cpp   [m | [37mcreate_publisher        [m | [32mpublisher created[m      | client_key: 0x00000001, publisher_id: 0x109(3), participant_id: 0x001(1)
+[bash-1] [35m[1778123336.888789][m info     | [34mProxyClient.cpp   [m | [37mcreate_datawriter       [m | [32mdatawriter created[m     | client_key: 0x00000001, datawriter_id: 0x109(5), publisher_id: 0x109(3)
+[bash-1] [35m[1778123336.888931][m info     | [34mProxyClient.cpp   [m | [37mcreate_topic            [m | [32mtopic created[m          | client_key: 0x00000001, topic_id: 0x10E(2), participant_id: 0x001(1)
+[bash-1] [35m[1778123336.888970][m info     | [34mProxyClient.cpp   [m | [37mcreate_publisher        [m | [32mpublisher created[m      | client_key: 0x00000001, publisher_id: 0x10E(3), participant_id: 0x001(1)
+[bash-1] [35m[1778123336.889205][m info     | [34mProxyClient.cpp   [m | [37mcreate_datawriter       [m | [32mdatawriter created[m     | client_key: 0x00000001, datawriter_id: 0x10E(5), publisher_id: 0x10E(3)
+[bash-1] [35m[1778123336.889383][m info     | [34mProxyClient.cpp   [m | [37mcreate_topic            [m | [32mtopic created[m          | client_key: 0x00000001, topic_id: 0x113(2), participant_id: 0x001(1)
+[bash-1] [35m[1778123336.889433][m info     | [34mProxyClient.cpp   [m | [37mcreate_publisher        [m | [32mpublisher created[m      | client_key: 0x00000001, publisher_id: 0x113(3), participant_id: 0x001(1)
+[bash-1] [35m[1778123336.889687][m info     | [34mProxyClient.cpp   [m | [37mcreate_datawriter       [m | [32mdatawriter created[m     | client_key: 0x00000001, datawriter_id: 0x113(5), publisher_id: 0x113(3)
+[bash-2] INFO  [uxrce_dds_client] successfully created rt/fmu/out/battery_status data writer, topic id: 19
+[bash-2] INFO  [uxrce_dds_client] successfully created rt/fmu/out/estimator_status_flags data writer, topic id: 83
+[bash-2] INFO  [uxrce_dds_client] successfully created rt/fmu/out/failsafe_flags data writer, topic id: 89
+[bash-2] INFO  [uxrce_dds_client] successfully created rt/fmu/out/manual_control_setpoint data writer, topic id: 139
+[bash-2] INFO  [uxrce_dds_client] successfully created rt/fmu/out/position_setpoint_triplet data writer, topic id: 183
+[bash-2] INFO  [uxrce_dds_client] successfully created rt/fmu/out/sensor_combined data writer, topic id: 214
+[bash-2] INFO  [uxrce_dds_client] successfully created rt/fmu/out/timesync_status data writer, topic id: 237
+[bash-2] INFO  [uxrce_dds_client] successfully created rt/fmu/out/vehicle_land_detected data writer, topic id: 264
+[bash-2] INFO  [uxrce_dds_client] successfully created rt/fmu/out/vehicle_attitude data writer, topic id: 251
+[bash-2] INFO  [uxrce_dds_client] successfully created rt/fmu/out/vehicle_control_mode data writer, topic id: 258
+[bash-2] INFO  [uxrce_dds_client] successfully created rt/fmu/out/vehicle_global_position data writer, topic id: 259
+[bash-2] INFO  [uxrce_dds_client] successfully created rt/fmu/out/vehicle_gps_position data writer, topic id: 261
+[bash-2] INFO  [uxrce_dds_client] successfully created rt/fmu/out/vehicle_local_position data writer, topic id: 265
+[bash-2] INFO  [uxrce_dds_client] successfully created rt/fmu/out/vehicle_odometry data writer, topic id: 270
+[bash-2] INFO  [uxrce_dds_client] successfully created rt/fmu/out/vehicle_status_v1 data writer, topic id: 275
+[bash-2] INFO  [uxrce_dds_client] time sync converged
+[bash-2] WARN  [timesync] time jump detected. Resetting time synchroniser.
+[bash-2] WARN  [uxrce_dds_client] time sync no longer converged
+[bash-2] INFO  [uxrce_dds_client] time sync converged
+[bash-2] WARN  [timesync] time jump detected. Resetting time synchroniser.
+[bash-2] WARN  [uxrce_dds_client] time sync no longer converged
+[bash-2] INFO  [uxrce_dds_client] time sync converged
+[bash-2] WARN  [timesync] time jump detected. Resetting time synchroniser.
+[bash-2] WARN  [uxrce_dds_client] time sync no longer converged
+[bash-2] INFO  [uxrce_dds_client] time sync converged
+[bash-2] WARN  [timesync] time jump detected. Resetting time synchroniser.
+[bash-2] WARN  [uxrce_dds_client] time sync no longer converged
+[bash-2] INFO  [uxrce_dds_client] time sync converged
+[bash-2] WARN  [timesync] time jump detected. Resetting time synchroniser.
+[bash-2] WARN  [uxrce_dds_client] time sync no longer converged
+[bash-2] INFO  [uxrce_dds_client] time sync converged
+[bash-1] [35m[1778123438.480872][m info     | [34mProxyClient.cpp   [m | [37mcreate_topic            [m | [32mtopic created[m          | client_key: 0x00000001, topic_id: 0x0FF(2), participant_id: 0x001(1)
+[bash-1] [35m[1778123438.480956][m info     | [34mProxyClient.cpp   [m | [37mcreate_publisher        [m | [32mpublisher created[m      | client_key: 0x00000001, publisher_id: 0x0FF(3), participant_id: 0x001(1)
+[bash-1] [35m[1778123438.481504][m info     | [34mProxyClient.cpp   [m | [37mcreate_datawriter       [m | [32mdatawriter created[m     | client_key: 0x00000001, datawriter_id: 0x0FF(5), publisher_id: 0x0FF(3)
+[bash-2] INFO  [uxrce_dds_client] successfully created rt/fmu/out/vehicle_command_ack data writer, topic id: 255
+[bash-2] INFO  [commander] Armed by external command	
+[bash-2] INFO  [tone_alarm] arming warning
+[bash-2] INFO  [commander] Takeoff detected	
+[bash-2] WARN  [timesync] time jump detected. Resetting time synchroniser.
+[bash-2] WARN  [uxrce_dds_client] time sync no longer converged
+[bash-2] INFO  [uxrce_dds_client] time sync converged
+[bash-2] WARN  [timesync] time jump detected. Resetting time synchroniser.
+[bash-2] WARN  [uxrce_dds_client] time sync no longer converged
+[bash-2] INFO  [uxrce_dds_client] time sync converged
+[bash-2] WARN  [timesync] time jump detected. Resetting time synchroniser.
+[bash-2] WARN  [uxrce_dds_client] time sync no longer converged
+[bash-2] INFO  [uxrce_dds_client] time sync converged
+[bash-2] WARN  [timesync] time jump detected. Resetting time synchroniser.
+[bash-2] WARN  [uxrce_dds_client] time sync no longer converged
+[bash-2] INFO  [uxrce_dds_client] time sync converged
+[bash-2] WARN  [timesync] time jump detected. Resetting time synchroniser.
+[bash-2] WARN  [uxrce_dds_client] time sync no longer converged
+[bash-2] INFO  [uxrce_dds_client] time sync converged
+[bash-2] WARN  [timesync] time jump detected. Resetting time synchroniser.
+[bash-2] WARN  [uxrce_dds_client] time sync no longer converged
+[bash-2] INFO  [uxrce_dds_client] time sync converged
+[bash-2] WARN  [timesync] time jump detected. Resetting time synchroniser.
+[bash-2] WARN  [uxrce_dds_client] time sync no longer converged
+[bash-2] INFO  [uxrce_dds_client] time sync converged
+[bash-2] WARN  [timesync] time jump detected. Resetting time synchroniser.
+[bash-2] WARN  [uxrce_dds_client] time sync no longer converged
+[bash-2] INFO  [uxrce_dds_client] time sync converged
+[bash-2] WARN  [timesync] time jump detected. Resetting time synchroniser.
+[bash-2] WARN  [uxrce_dds_client] time sync no longer converged
+[bash-2] INFO  [uxrce_dds_client] time sync converged
+[bash-2] WARN  [timesync] time jump detected. Resetting time synchroniser.
+[bash-2] WARN  [uxrce_dds_client] time sync no longer converged
+[bash-2] INFO  [uxrce_dds_client] time sync converged
+[bash-2] WARN  [timesync] time jump detected. Resetting time synchroniser.
+[bash-2] WARN  [uxrce_dds_client] time sync no longer converged
+[bash-2] INFO  [uxrce_dds_client] time sync converged
+[bash-2] WARN  [timesync] time jump detected. Resetting time synchroniser.
+[bash-2] WARN  [uxrce_dds_client] time sync no longer converged
+[bash-2] INFO  [uxrce_dds_client] time sync converged
+[bash-2] WARN  [timesync] time jump detected. Resetting time synchroniser.
+[bash-2] WARN  [uxrce_dds_client] time sync no longer converged
+[bash-2] INFO  [uxrce_dds_client] time sync converged
+[bash-2] WARN  [timesync] time jump detected. Resetting time synchroniser.
+[bash-2] WARN  [uxrce_dds_client] time sync no longer converged
+[bash-2] INFO  [uxrce_dds_client] time sync converged
+[bash-2] WARN  [timesync] time jump detected. Resetting time synchroniser.
+[bash-2] WARN  [uxrce_dds_client] time sync no longer converged
+[bash-2] INFO  [uxrce_dds_client] time sync converged
+[bash-2] WARN  [timesync] time jump detected. Resetting time synchroniser.
+[bash-2] WARN  [uxrce_dds_client] time sync no longer converged
+[bash-2] INFO  [uxrce_dds_client] time sync converged
+[bash-2] WARN  [timesync] time jump detected. Resetting time synchroniser.
+[bash-2] WARN  [uxrce_dds_client] time sync no longer converged
+[bash-2] INFO  [uxrce_dds_client] time sync converged
+[bash-2] WARN  [timesync] time jump detected. Resetting time synchroniser.
+[bash-2] WARN  [uxrce_dds_client] time sync no longer converged
+[bash-2] INFO  [uxrce_dds_client] time sync converged
+[bash-2] WARN  [timesync] time jump detected. Resetting time synchroniser.
+[bash-2] WARN  [uxrce_dds_client] time sync no longer converged
+[bash-2] INFO  [uxrce_dds_client] time sync converged
+[bash-2] WARN  [timesync] time jump detected. Resetting time synchroniser.
+[bash-2] WARN  [uxrce_dds_client] time sync no longer converged
+[bash-2] INFO  [uxrce_dds_client] time sync converged
+[bash-2] WARN  [timesync] time jump detected. Resetting time synchroniser.
+[bash-2] WARN  [uxrce_dds_client] time sync no longer converged
+[bash-2] INFO  [uxrce_dds_client] time sync converged
+[bash-2] WARN  [timesync] time jump detected. Resetting time synchroniser.
+[bash-2] WARN  [uxrce_dds_client] time sync no longer converged
+[bash-2] INFO  [uxrce_dds_client] time sync converged
+[bash-2] WARN  [failsafe] Failsafe activated	
+[bash-2] INFO  [tone_alarm] battery warning (fast)
+[bash-2] ERROR [flight_mode_manager] Matching flight task was not able to run, Nav state: 2, Task: 1
+[WARNING] [launch]: user interrupted with ctrl-c (SIGINT)
+[parameter_bridge-5] [INFO] [1778123902.715288261] [rclcpp]: signal_handler(SIGINT/SIGTERM)
+[bash-2] Exiting NOW.
+[INFO] [parameter_bridge-5]: sending signal 'SIGINT' to process[parameter_bridge-5]
+[INFO] [bash-2]: sending signal 'SIGINT' to process[bash-2]
+[INFO] [bash-1]: sending signal 'SIGINT' to process[bash-1]
+[ERROR] [bash-1]: process has died [pid 102520, exit code -2, cmd 'bash -c export ROS_DOMAIN_ID=0; export LD_LIBRARY_PATH=/usr/local/lib:/home/aaryan/Micro-XRCE-DDS-Agent/build:/home/aaryan/ros2_ws/src/terrain_mapping_drone_control/scripts/Micro-XRCE-DDS-Agent/build:${LD_LIBRARY_PATH:-}; fuser -k 8889/udp 2>/dev/null || true; sleep 0.5; exec /usr/local/bin/MicroXRCEAgent udp4 -p 8889'].
+[bash-2] ninja: build stopped: interrupted by user.
+[parameter_bridge-5] [INFO] [1778123902.722597913] [rclcpp]: signal_handler(SIGINT/SIGTERM)
+[bash-2] make: *** [Makefile:232: px4_sitl] Interrupt
+[ERROR] [bash-2]: process has died [pid 102530, exit code -2, cmd 'bash -c export ROS_DOMAIN_ID=0 PX4_UXRCE_DDS_PORT=8889; exec make px4_sitl gz_x500_depth_mono'].
+[INFO] [parameter_bridge-5]: process has finished cleanly [pid 103160]

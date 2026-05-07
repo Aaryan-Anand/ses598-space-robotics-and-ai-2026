@@ -1,0 +1,1 @@
+/home/aaryan/PX4-Autopilot/build/px4_sitl_default/rootfs/log/2026-05-07/03_08_48.ulg

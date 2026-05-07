@@ -1,0 +1,77 @@
+[terminal3] ROS_DOMAIN_ID=0 (must match terminal 1)
+[INFO] [launch]: All log files can be found below /home/aaryan/.ros/log/2026-05-06-20-00-47-270984-Lace-101732
+[INFO] [launch]: Default logging verbosity is set to INFO
+[INFO] [aruco_tracker-1]: process started with pid [101776]
+[INFO] [auto_detect_land-2]: process started with pid [101778]
+[auto_detect_land-2] [INFO] [1778122847.983437332] [cylinder_mission_node]: State WAIT_INTRINSICS: waiting for /drone/front_depth/camera_info (bridge starts ~10s after sim launch).
+[auto_detect_land-2] [INFO] [1778122847.996776706] [cylinder_mission_node]: Receiving /fmu/out/vehicle_local_position NED z=0.03 (used for offboard setpoints and progress).
+[auto_detect_land-2] [INFO] [1778122848.008881452] [cylinder_mission_node]: Camera intrinsics received.
+[auto_detect_land-2] [INFO] [1778122849.499031884] [cylinder_mission_node]: Locked battery_at_mission_start: 0.9889
+[auto_detect_land-2] [INFO] [1778122849.517472437] [cylinder_mission_node]: Intrinsics + PX4 pose + 10 setpoint cycles OK. Moving to ARM_TAKEOFF.
+[auto_detect_land-2] [INFO] [1778122849.530278983] [cylinder_mission_node]: Offboard mode command sent
+[auto_detect_land-2] [INFO] [1778122849.546012446] [cylinder_mission_node]: Offboard mode command sent
+[auto_detect_land-2] [INFO] [1778122849.564824391] [cylinder_mission_node]: Offboard mode command sent
+[auto_detect_land-2] [INFO] [1778122849.579707666] [cylinder_mission_node]: Arm command sent
+[auto_detect_land-2] [INFO] [1778122849.592815333] [cylinder_mission_node]: Arm command sent
+[auto_detect_land-2] [INFO] [1778122849.604972015] [cylinder_mission_node]: Arm command sent
+[auto_detect_land-2] [INFO] [1778122849.616379633] [cylinder_mission_node]: State ARM_TAKEOFF stage=0 pos=(-0.00,0.03,0.02) dist_to_subgoal=5.02m
+[auto_detect_land-2] [INFO] [1778122852.613439968] [cylinder_mission_node]: State ARM_TAKEOFF stage=0 pos=(-0.01,0.02,0.02) dist_to_subgoal=5.02m
+[auto_detect_land-2] [INFO] [1778122855.753045330] [cylinder_mission_node]: State ARM_TAKEOFF stage=0 pos=(-0.00,0.01,-0.48) dist_to_subgoal=4.52m
+[auto_detect_land-2] [INFO] [1778122858.886793993] [cylinder_mission_node]: State ARM_TAKEOFF stage=0 pos=(0.00,-0.01,-4.04) dist_to_subgoal=0.96m
+[auto_detect_land-2] [INFO] [1778122860.747664221] [cylinder_mission_node]: Vertical takeoff complete. Proceeding to circle entry point.
+[auto_detect_land-2] [INFO] [1778122861.961036858] [cylinder_mission_node]: State ARM_TAKEOFF stage=1 pos=(0.89,-0.03,-4.83) dist_to_subgoal=14.11m
+[auto_detect_land-2] [INFO] [1778122865.046811504] [cylinder_mission_node]: State ARM_TAKEOFF stage=1 pos=(13.59,-0.17,-4.90) dist_to_subgoal=1.42m
+[auto_detect_land-2] [INFO] [1778122865.838041406] [cylinder_mission_node]: Reached circle entry point. Switching to CIRCLE.
+[WARNING] [launch]: user interrupted with ctrl-c (SIGINT)
+[INFO] [auto_detect_land-2]: sending signal 'SIGINT' to process[auto_detect_land-2]
+[INFO] [aruco_tracker-1]: sending signal 'SIGINT' to process[aruco_tracker-1]
+[aruco_tracker-1] Traceback (most recent call last):
+[aruco_tracker-1]   File "/home/aaryan/ros2_ws/install/terrain_mapping_drone_control/lib/terrain_mapping_drone_control/aruco_tracker", line 33, in <module>
+[aruco_tracker-1]     sys.exit(load_entry_point('terrain-mapping-drone-control', 'console_scripts', 'aruco_tracker')())
+[aruco_tracker-1]   File "/home/aaryan/ros2_ws/build/terrain_mapping_drone_control/terrain_mapping_drone_control/aruco_tracker.py", line 322, in main
+[auto_detect_land-2] Interrupted, shutting down.
+[auto_detect_land-2] Traceback (most recent call last):
+[auto_detect_land-2]   File "/home/aaryan/ros2_ws/install/terrain_mapping_drone_control/lib/terrain_mapping_drone_control/auto_detect_land", line 33, in <module>
+[auto_detect_land-2]     sys.exit(load_entry_point('terrain-mapping-drone-control', 'console_scripts', 'auto_detect_land')())
+[auto_detect_land-2]   File "/home/aaryan/ros2_ws/build/terrain_mapping_drone_control/terrain_mapping_drone_control/auto_detect_land.py", line 706, in main
+[aruco_tracker-1]   File "/opt/ros/humble/local/lib/python3.10/dist-packages/rclpy/__init__.py", line 229, in spin
+[aruco_tracker-1]     executor.spin_once()
+[aruco_tracker-1]   File "/opt/ros/humble/local/lib/python3.10/dist-packages/rclpy/executors.py", line 808, in spin_once
+[aruco_tracker-1]     self._spin_once_impl(timeout_sec)
+[aruco_tracker-1]   File "/opt/ros/humble/local/lib/python3.10/dist-packages/rclpy/executors.py", line 803, in _spin_once_impl
+[aruco_tracker-1]     handler()
+[aruco_tracker-1]   File "/opt/ros/humble/local/lib/python3.10/dist-packages/rclpy/task.py", line 256, in __call__
+[aruco_tracker-1]     self._execute_coroutine_step(self._handler)
+[aruco_tracker-1]   File "/opt/ros/humble/local/lib/python3.10/dist-packages/rclpy/task.py", line 272, in _execute_coroutine_step
+[aruco_tracker-1]     result = coro.send(None)
+[aruco_tracker-1]   File "/opt/ros/humble/local/lib/python3.10/dist-packages/rclpy/executors.py", line 488, in handler
+[aruco_tracker-1]     await call_coroutine(entity, arg)
+[aruco_tracker-1]   File "/opt/ros/humble/local/lib/python3.10/dist-packages/rclpy/executors.py", line 407, in _execute_subscription
+[aruco_tracker-1]     await await_or_execute(sub.callback, msg)
+[aruco_tracker-1]   File "/opt/ros/humble/local/lib/python3.10/dist-packages/rclpy/executors.py", line 110, in await_or_execute
+[aruco_tracker-1]     return callback(*args)
+[aruco_tracker-1]   File "/home/aaryan/ros2_ws/build/terrain_mapping_drone_control/terrain_mapping_drone_control/aruco_tracker.py", line 315, in camera_info_callback
+[auto_detect_land-2]     node.destroy_node()
+[auto_detect_land-2]   File "/opt/ros/humble/local/lib/python3.10/dist-packages/rclpy/node.py", line 1685, in destroy_node
+[auto_detect_land-2]     self.destroy_publisher(self._publishers[0])
+[auto_detect_land-2]   File "/opt/ros/humble/local/lib/python3.10/dist-packages/rclpy/node.py", line 1565, in destroy_publisher
+[auto_detect_land-2]     publisher.destroy()
+[auto_detect_land-2]   File "/opt/ros/humble/local/lib/python3.10/dist-packages/rclpy/publisher.py", line 99, in destroy
+[auto_detect_land-2]     self.__publisher.destroy_when_not_in_use()
+[auto_detect_land-2] KeyboardInterrupt
+[aruco_tracker-1]     self.get_logger().info(f'Distortion coefficients: {self.dist_coeffs}')
+[aruco_tracker-1]   File "/home/aaryan/.local/lib/python3.10/site-packages/numpy/core/arrayprint.py", line 1612, in _array_str_implementation
+[aruco_tracker-1]     return array2string(a, max_line_width, precision, suppress_small, ' ', "")
+[aruco_tracker-1]   File "/home/aaryan/.local/lib/python3.10/site-packages/numpy/core/arrayprint.py", line 736, in array2string
+[aruco_tracker-1]     return _array2string(a, options, separator, prefix)
+[aruco_tracker-1]   File "/home/aaryan/.local/lib/python3.10/site-packages/numpy/core/arrayprint.py", line 513, in wrapper
+[aruco_tracker-1]     return f(self, *args, **kwargs)
+[aruco_tracker-1]   File "/home/aaryan/.local/lib/python3.10/site-packages/numpy/core/arrayprint.py", line 546, in _array2string
+[aruco_tracker-1]     lst = _formatArray(a, format_function, options['linewidth'],
+[aruco_tracker-1]   File "/home/aaryan/.local/lib/python3.10/site-packages/numpy/core/arrayprint.py", line 889, in _formatArray
+[aruco_tracker-1]     return recurser(index=(),
+[aruco_tracker-1]   File "/home/aaryan/.local/lib/python3.10/site-packages/numpy/core/arrayprint.py", line 789, in recurser
+[aruco_tracker-1]     def recurser(index, hanging_indent, curr_width):
+[aruco_tracker-1] KeyboardInterrupt
+[ERROR] [aruco_tracker-1]: process has died [pid 101776, exit code -2, cmd '/home/aaryan/ros2_ws/install/terrain_mapping_drone_control/lib/terrain_mapping_drone_control/aruco_tracker --ros-args --log-level warn --ros-args -r __node:=aruco_tracker --params-file /tmp/launch_params_evegb95t'].
+[ERROR] [auto_detect_land-2]: process has died [pid 101778, exit code -2, cmd '/home/aaryan/ros2_ws/install/terrain_mapping_drone_control/lib/terrain_mapping_drone_control/auto_detect_land --ros-args -r __node:=cylinder_mission_node --params-file /tmp/launch_params_qeco5927'].
